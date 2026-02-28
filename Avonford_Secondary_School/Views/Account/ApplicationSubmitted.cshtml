@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Application Submitted";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .confirmation-container {
+            max-width: 700px;
+            margin: 80px auto;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            color: #222;
+            font-size: 28px;
+            margin-bottom: 25px;
+        }
+
+        .alert-success {
+            font-size: 16px;
+            padding: 20px;
+            border-radius: 6px;
+            background-color: #dff0d8;
+            border-color: #c3e6cb;
+            color: #3c763d;
+        }
+
+        p {
+            font-size: 16px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            background-color: #ff6600;
+            border-color: #ff6600;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+            .btn-primary:hover {
+                background-color: #e65c00;
+                border-color: #e65c00;
+            }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background-color: #222;
+            color: #fff;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="confirmation-container">
+        <h2>@ViewBag.Title</h2>
+
+        <div class="alert alert-success" role="alert">
+            @ViewBag.ConfirmationMessage
+        </div>
+
+        <p>
+            Thank you for submitting your application to <strong>Avonford Secondary School</strong>.
+            Your application is now under review. We will notify you via email
+            once a decision has been made.
+        </p>
+
+        <p>
+            @Html.ActionLink("Return to Home Page", "Index", "Home", null, new { @class = "btn btn-primary" })
+        </p>
+    </div>
+
+    <div class="footer">
+        &copy; @DateTime.Now.Year Avonford Secondary School | Built with passion for education.
+    </div>
+
+</body>
+</html>

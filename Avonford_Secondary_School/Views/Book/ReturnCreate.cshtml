@@ -1,0 +1,155 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.ReturnVMs.ReturnCreateVM
+@{
+    ViewBag.Title = "File a Return";
+}
+<style>
+    .wrap{max-width:980px;margin:24px auto;padding:16px}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.04);padding:18px;margin-bottom:16px}
+    .title{font-size:20px;font-weight:700;margin-bottom:8px}
+    .meta{color:#666}
+    .badge{display:inline-block;padding:3px 8px;border-radius:12px;font-size:12px}
+    .badge-ok{background:#ecfdf5;color:#065f46}
+    .badge-warn{background:#fff7ed;color:#9a3412}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .drop{border:2px dashed #cbd5e1;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:.2s}
+    .drop.drag{background:#f8fafc;border-color:#60a5fa}
+    .thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .thumb{position:relative;width:110px;height:110px;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .thumb .x{position:absolute;right:6px;top:4px;background:#111827;color:#fff;border-radius:10px;padding:2px 6px;font-size:12px;cursor:pointer}
+    .help{font-size:12px;color:#64748b}
+    .btn{background:#111827;color:#fff;border:0;padding:10px 16px;border-radius:10px;cursor:pointer}
+    .btn[disabled]{opacity:.5;cursor:not-allowed}
+    .btn-outline{background:#fff;color:#111827;border:1px solid #cbd5e1}
+    .toast{position:fixed;right:16px;bottom:16px;background:#111827;color:#fff;padding:12px 14px;border-radius:10px;display:none}
+    textarea{min-height:110px}
+    @@media(max-width:880px){.grid{grid-template-columns:1fr}}
+</style>
+
+<div class="wrap">
+    <div class="card">
+        <div class="title">File a Return</div>
+        <div class="meta">
+            <strong>@Model.BookTitle</strong> &middot; Book value: <strong>R @Model.BookValue.ToString("0.00")</strong>
+            &middot; Delivery fee: R @Model.DeliveryFee.ToString("0.00")
+        </div>
+        <div class="meta" style="margin-top:6px">
+            @if (Model.WithinWindow)
+            {
+                <span class="badge badge-ok">Within window</span>
+            }
+            else
+            {
+                <span class="badge badge-warn">Window expired</span>
+            }
+            Return window: @Model.ReturnWindowDays day(s). Ends <strong>@Model.WindowEndsAt.ToString("yyyy-MM-dd HH:mm")</strong>.
+        </div>
+    </div>
+
+    @using (Html.BeginForm("ReturnCreate", "Book", FormMethod.Post, new { enctype = "multipart/form-data", @id = "rForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.OrderID)
+
+        <div class="card grid">
+            <div>
+                <label>Reason</label>
+                @Html.DropDownListFor(m => m.Reason, Model.ReasonOptions, "-- Select reason --", new { @class = "form-control", id = "reason" })
+                <div class="help" id="reasonHelp" style="margin-top:6px">
+                    Delivery fee is not refundable unless marked by admin for special cases.
+                </div>
+
+                <label style="margin-top:12px">Description</label>
+                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", maxlength = 1000, id = "desc" })
+                <div class="help"><span id="descCount">0</span>/1000 characters</div>
+
+                @Html.ValidationMessageFor(m => m.Reason)
+                @Html.ValidationMessageFor(m => m.Description)
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            </div>
+
+            <div>
+                <label>Photo evidence (up to 6 JPG/PNG, ≤ 5MB each)</label>
+                <div class="drop" id="drop">Drag & drop images here or click to select</div>
+                <input type="file" id="files" name="Photos" accept="image/jpeg,image/png" multiple style="display:none" />
+                <div class="help">Tip: For “Damaged” or “Not as described”, at least one photo is required.</div>
+                <div class="thumbs" id="thumbs"></div>
+            </div>
+        </div>
+
+        <div class="card" style="display:flex;gap:8px;justify-content:flex-end">
+            <a href="@Url.Action("MyOrders","Book")" class="btn btn-outline">Cancel</a>
+            <button class="btn" id="submitBtn" type="submit">Submit Return</button>
+        </div>
+    }
+
+    <div class="toast" id="toast"></div>
+</div>
+
+@section scripts {
+    <script>
+        (function () {
+            var form = document.getElementById('rForm');
+            var desc = document.getElementById('desc');
+            var count = document.getElementById('descCount');
+            var drop = document.getElementById('drop');
+            var input = document.getElementById('files');
+            var thumbs = document.getElementById('thumbs');
+            var toast = document.getElementById('toast');
+
+            // char counter
+            function updateCount() { count.textContent = (desc.value || '').length; }
+            desc.addEventListener('input', updateCount); updateCount();
+
+            // dropzone
+            function showToast(t) { toast.textContent = t; toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 2200); }
+
+            function preview(files) {
+                thumbs.innerHTML = '';
+                var max = Math.min(files.length, 6);
+                if (files.length > 6) showToast('Only the first 6 files will be used.');
+                for (let i = 0; i < max; i++) {
+                    let f = files[i];
+                    if (!/image\/(jpeg|png)/i.test(f.type)) { showToast('Only JPG/PNG accepted.'); continue; }
+                    if (f.size > 5 * 1024 * 1024) { showToast(f.name + ' is >5MB'); continue; }
+                    let div = document.createElement('div'); div.className = 'thumb';
+                    let img = document.createElement('img'); div.appendChild(img);
+                    let xx = document.createElement('div'); xx.className = 'x'; xx.textContent = '×';
+                    xx.addEventListener('click', function () {
+                        // remove from FileList via DataTransfer
+                        let dt = new DataTransfer();
+                        let fl = input.files;
+                        for (let j = 0; j < fl.length; j++) { if (j !== i) dt.items.add(fl[j]); }
+                        input.files = dt.files; preview(input.files);
+                    });
+                    div.appendChild(xx);
+                    thumbs.appendChild(div);
+                    let fr = new FileReader(); fr.onload = e => img.src = e.target.result; fr.readAsDataURL(f);
+                }
+            }
+
+            drop.addEventListener('click', () => input.click());
+            drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag'); });
+            drop.addEventListener('dragleave', e => { drop.classList.remove('drag'); });
+            drop.addEventListener('drop', e => {
+                e.preventDefault(); drop.classList.remove('drag');
+                let dt = new DataTransfer();
+                const items = e.dataTransfer.files;
+                for (let i = 0; i < items.length; i++) dt.items.add(items[i]);
+                input.files = dt.files; preview(input.files);
+            });
+            input.addEventListener('change', () => preview(input.files));
+
+            // require one photo for certain reasons (client-side hint)
+            const reason = document.getElementById('reason');
+            form.addEventListener('submit', function (e) {
+                if (reason.value === 'Not as described' || reason.value === 'Damaged on arrival') {
+                    if (!input.files || input.files.length === 0) {
+                        e.preventDefault(); showToast('Please attach at least one photo.'); return false;
+                    }
+                }
+                document.getElementById('submitBtn').setAttribute('disabled', 'disabled');
+            });
+        })();
+    </script>
+}

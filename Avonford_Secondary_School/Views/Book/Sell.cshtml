@@ -1,0 +1,229 @@
+﻿@* ========================= Views/Book/Sell.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.SellBookViewModel
+@{
+    ViewBag.Title = "Sell a Book";
+}
+
+<h2 class="mb-3">Sell a Book</h2>
+
+@using (Html.BeginForm(
+        "Sell",
+        "Book",
+        FormMethod.Post,
+        new { enctype = "multipart/form-data", id = "sellForm", data_val = "false", novalidate = "novalidate" } // disable client + HTML5 validation
+    ))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="validation-summary-errors text-danger">
+        @Html.ValidationSummary(true)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Title)
+        @Html.TextBoxFor(m => m.Title, new { @class = "form-control", placeholder = "e.g., Things Fall Apart", title = "Keep it short and searchable." })
+        @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Author)
+        @Html.TextBoxFor(m => m.Author, new { @class = "form-control", placeholder = "e.g., Chinua Achebe", title = "Author helps buyers find the exact book." })
+        @Html.ValidationMessageFor(m => m.Author, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-row" style="display:flex;gap:16px;flex-wrap:wrap">
+        <div class="form-group" style="flex:1;min-width:220px">
+            @Html.LabelFor(m => m.Edition)
+            @Html.TextBoxFor(m => m.Edition, new { @class = "form-control", placeholder = "e.g., 2nd Edition" })
+            @Html.ValidationMessageFor(m => m.Edition, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group" style="flex:1;min-width:220px">
+            @* Render ISBN as a plain input so no client-side data-val rules fire *@
+            @Html.Label("ISBN")
+            @Html.TextBox("ISBN", Model?.ISBN, new
+            {
+                @class = "form-control",
+                placeholder = "ISBN-10 or ISBN-13",
+                title = "Use the digits on the back of the book (you can leave it free-form for now).",
+                data_val = "false"
+            })
+            @Html.ValidationMessage("ISBN", "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-row" style="display:flex;gap:16px;flex-wrap:wrap">
+        <div class="form-group" style="flex:1;min-width:220px">
+            @Html.Label("Price")
+            <div class="input-group">
+                <span class="input-group-addon" style="padding:6px 8px;border:1px solid #ccc;border-right:0;background:#f8f8f8">R</span>
+                @* Plain textbox so we can parse both "400.00" and "400,00" on the server *@
+                @Html.TextBox("Price", (Model == null || Model.Price == 0) ? null : Model.Price.ToString("0.##"),
+                    new { @class = "form-control", id = "priceInput", inputmode = "decimal", placeholder = "e.g., 400.00 or 400,00", data_val = "false" })
+            </div>
+            @Html.ValidationMessage("Price", "", new { @class = "text-danger" })
+            <small class="text-muted">Use a dot or comma for decimals.</small>
+        </div>
+
+        <div class="form-group" style="flex:1;min-width:220px">
+            @Html.LabelFor(m => m.IsNegotiable)
+            <div class="checkbox" style="margin-top:6px">
+                <label>
+                    @Html.CheckBoxFor(m => m.IsNegotiable) I’m open to offers
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group" style="flex:1;min-width:220px">
+            @Html.LabelFor(m => m.Condition)
+            @Html.DropDownListFor(
+                m => m.Condition,
+                new SelectList(new[] { "New", "Like New", "Good", "Fair", "Poor" }, Model?.Condition),
+                "-- Select Condition --",
+                new { @class = "form-control" }
+            )
+            @Html.ValidationMessageFor(m => m.Condition, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Description)
+        @Html.TextAreaFor(m => m.Description, 8, 0, new { @class = "form-control", placeholder = "Tell buyers about the book’s vibe, highlights, condition, and any notes.", id = "descBox" })
+        <small id="descCounter" class="text-muted">0 / 300 min</small>
+        @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+    </div>
+
+    <hr />
+
+    <div class="form-group">
+        <label>Cover Image (JPG/PNG, max 3MB)</label>
+        <input type="file" name="CoverImage" id="coverInput" accept=".jpg,.jpeg,.png" class="form-control" />
+        <div id="coverPreviewWrap" style="margin-top:8px;display:none">
+            <img id="coverPreview" style="max-width:220px;border:1px solid #ddd;border-radius:6px;padding:4px" />
+        </div>
+        @Html.ValidationMessageFor(m => m.CoverImage, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label>Extra Images (up to 3)</label>
+        <input type="file" name="ExtraImages" id="extraInput" accept=".jpg,.jpeg,.png" class="form-control" multiple />
+        <div id="extraPreview" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px"></div>
+        @Html.ValidationMessageFor(m => m.ExtraImages, "", new { @class = "text-danger" })
+    </div>
+
+    <hr />
+    <h4>Pickup Location</h4>
+    <div class="form-group">
+        @Html.LabelFor(m => m.PickupAddress)
+        @Html.TextBoxFor(m => m.PickupAddress, new { @class = "form-control", placeholder = "Start typing address and pick from suggestions", id = "pickupAddress" })
+        @Html.ValidationMessageFor(m => m.PickupAddress, "", new { @class = "text-danger" })
+        @Html.HiddenFor(m => m.Latitude, new { id = "lat" })
+        @Html.HiddenFor(m => m.Longitude, new { id = "lng" })
+    </div>
+
+    <div id="map" style="width:100%;height:250px;border:1px solid #e3e3e3;border-radius:6px"></div>
+
+    <div class="text-right" style="margin-top:18px">
+        <button type="submit" class="btn btn-primary">List Book</button>
+    </div>
+}
+
+@section scripts{
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Model.GoogleMapsApiKey&libraries=places"></script>
+    <script>
+        // --- Description live counter ---
+        (function () {
+            var box = document.getElementById('descBox');
+            var counter = document.getElementById('descCounter');
+            function update() {
+                var len = (box.value || '').replace(/<[^>]*>/g, '').length;
+                counter.textContent = len + " / 300 min";
+                counter.style.color = len < 300 ? "#c9302c" : "#5cb85c";
+            }
+            if (box) { box.addEventListener('input', update); update(); }
+        })();
+
+        // --- Price normalize: allow , or ., keep max 2dp ---
+        (function () {
+            var el = document.getElementById('priceInput');
+            if (!el) return;
+            function clean(val) {
+                val = (val || "").toString().trim().replace(',', '.');
+                var parts = val.split('.');
+                if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+                var m = val.match(/^(\d+)(?:\.(\d{0,2}))?$/);
+                if (!m) return val;
+                return m[1] + (m[2] ? '.' + m[2] : '');
+            }
+            el.addEventListener('input', function () { el.value = clean(el.value); });
+            el.addEventListener('blur', function () {
+                var v = el.value.replace(',', '.'); if (!v) return;
+                var n = parseFloat(v); if (!isNaN(n)) el.value = n.toFixed(2);
+            });
+            document.getElementById('sellForm').addEventListener('submit', function () {
+                el.value = (el.value || '').replace(',', '.');
+            });
+        })();
+
+        // --- Image previews ---
+        (function () {
+            var cover = document.getElementById('coverInput');
+            if (cover) {
+                cover.addEventListener('change', function (e) {
+                    var f = e.target.files && e.target.files[0]; if (!f) return;
+                    var rd = new FileReader();
+                    rd.onload = function (ev) {
+                        document.getElementById('coverPreview').src = ev.target.result;
+                        document.getElementById('coverPreviewWrap').style.display = 'block';
+                    };
+                    rd.readAsDataURL(f);
+                });
+            }
+            var extra = document.getElementById('extraInput');
+            if (extra) {
+                extra.addEventListener('change', function (e) {
+                    var wrap = document.getElementById('extraPreview'); wrap.innerHTML = "";
+                    Array.prototype.slice.call(e.target.files || []).slice(0, 3).forEach(function (f) {
+                        var rd = new FileReader();
+                        rd.onload = function (ev) {
+                            var img = document.createElement('img');
+                            img.src = ev.target.result;
+                            img.style.maxWidth = "130px";
+                            img.style.border = "1px solid #ddd";
+                            img.style.borderRadius = "6px";
+                            img.style.padding = "4px";
+                            wrap.appendChild(img);
+                        };
+                        rd.readAsDataURL(f);
+                    });
+                });
+            }
+        })();
+
+        // --- Google Maps Autocomplete (address only) ---
+        (function initMaps() {
+            var input = document.getElementById('pickupAddress');
+            if (!input || typeof google === 'undefined') return;
+            var autocomplete = new google.maps.places.Autocomplete(input, { types: ['geocode'] });
+            var mapEl = document.getElementById('map');
+            var center = { lat: -26.2041, lng: 28.0473 }; // default center
+            var map = new google.maps.Map(mapEl, { center: center, zoom: 12 });
+            var marker = new google.maps.Marker({ map: map, position: center, draggable: false });
+
+            function setMarker(lat, lng) {
+                var pos = { lat: lat, lng: lng };
+                map.setCenter(pos); map.setZoom(14); marker.setPosition(pos);
+            }
+
+            var latField = document.getElementById('lat');
+            var lngField = document.getElementById('lng');
+            if (latField.value && lngField.value) setMarker(parseFloat(latField.value), parseFloat(lngField.value));
+
+            autocomplete.addListener('place_changed', function () {
+                var place = autocomplete.getPlace(); if (!place || !place.geometry) return;
+                var loc = place.geometry.location, lat = loc.lat(), lng = loc.lng();
+                latField.value = lat.toFixed(6); lngField.value = lng.toFixed(6); setMarker(lat, lng);
+            });
+        })();
+    </script>
+}

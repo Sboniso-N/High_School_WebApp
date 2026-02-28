@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Avonford_Secondary_School.Models.ViewModels.RegisterTutorViewModel>
+
+@{
+    ViewBag.Title = "Tutor List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .navbar-custom {
+        background-color: #ff6600;
+        border: none;
+        border-radius: 0;
+        margin-bottom: 0;
+    }
+
+        .navbar-custom .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff !important;
+        }
+
+        .navbar-custom .navbar-nav > li > a {
+            color: #fff !important;
+            font-size: 16px;
+        }
+
+            .navbar-custom .navbar-nav > li > a:hover {
+                color: #222 !important;
+            }
+</style>
+<nav class="navbar navbar-custom">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/Admin/Index">Avonford Admin Panel</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/Admin/PendingApplications">Pending Applications</a></li>
+            <li><a href="/Admin/RegisterTeacher">Register Teacher</a></li>
+            <li><a href="/Admin/AllocateTeacher">Allocate Teachers</a></li>
+            <li><a href="/Account/Logout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 class="text-center" style="color:#ff6600;">Tutors</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Profile</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Cell</th>
+                <th>Grades</th>
+                <th>Subjects</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tutor in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        <img src="@( !string.IsNullOrEmpty(tutor.ProfilePicBase64)
+                                    ? "data:image/jpeg;base64," + tutor.ProfilePicBase64
+                                    : "https://via.placeholder.com/60")"
+                             style="width:60px; height:60px; border-radius:30px; object-fit:cover;" />
+                    </td>
+                    <td>@tutor.FirstName @tutor.LastName</td>
+                    <td>@tutor.Email</td>
+                    <td>@tutor.Phone</td>
+                    <td>
+                        @foreach (var g in tutor.SelectedGrades)
+                        {
+                            <span class="label label-info" style="margin-right:4px;">
+                                @tutor.GradeList.First(gr => gr.Value == g.ToString()).Text
+                            </span>
+                        }
+                    </td>
+                    <td>
+                        @foreach (var kv in tutor.SelectedSubjectsPerGrade)
+                        {
+                            var uniqueSubjects = kv.Value.Distinct().ToList();
+                            <div>
+                                <strong>@tutor.GradeList.First(gr => gr.Value == kv.Key.ToString()).Text</strong>:
+                                @foreach (var s in uniqueSubjects)
+                                {
+                                    <span class="label label-primary" style="margin-right:4px;">
+                                        @tutor.AvailableSubjectsByGrade[kv.Key].First(sub => sub.Value == s.ToString()).Text
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </td>
+                    <td>
+                        <a href="@Url.Action("EditTutor", "Account", new { id = tutor.TutorID })" class="btn btn-sm btn-primary">Edit</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

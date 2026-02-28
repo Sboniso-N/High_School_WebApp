@@ -1,0 +1,124 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.StudentTransferRequestFormVM
+@{
+    ViewBag.Title = "Request Stream Transfer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-3 text-primary"><i class="fas fa-exchange-alt"></i> Request Stream Transfer</h2>
+
+    @using (Html.BeginForm("RequestTransfer", "Student", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation", novalidate = "novalidate" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <!-- Left panel: Current info -->
+            <div class="col-md-5 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white"><b>Your Current Details</b></div>
+                    <div class="card-body">
+                        <p><b>Current Stream:</b> @Model.CurrentStream</p>
+                        <p><b>Grade:</b> @Model.CurrentGrade</p>
+                        <p><b>Subjects:</b></p>
+                        <ul>
+                            @foreach (var s in Model.CurrentSubjects)
+                            {
+                                <li>@s</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right panel: New Request -->
+            <div class="col-md-7 mb-4">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white"><b>Request Details</b></div>
+                    <div class="card-body">
+
+                        <!-- Stream Selection with tooltips & live seat -->
+                        <label><b>Select New Stream:</b></label>
+                        <div class="row mb-2">
+                            @foreach (var stream in Model.AvailableStreams)
+                            {
+                                var isFull = stream.IsFull;
+                                var btnClass = isFull ? "btn-outline-danger" : "btn-outline-primary";
+                                <div class="col-12 col-md-6 mb-2">
+                                    <button type="button" class="btn w-100 stream-select @btnClass @(isFull ? "disabled" : "")"
+                                            data-stream="@stream.StreamName"
+                                            data-subjects="@string.Join(",", stream.Subjects)"
+                                            title="@stream.Description"
+                                            @(isFull ? "disabled" : "")>
+                                        @stream.StreamName
+                                        <span class="badge @(isFull ? "badge-danger" : "badge-success") float-right ml-2">@stream.Enrolled/@stream.Capacity</span>
+                                        @if (isFull)
+                                        {
+                                            <span class="small text-danger d-block">Stream Full – Try Another</span>
+                                        }
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                        <input type="hidden" id="SelectedNewStream" name="SelectedNewStream" value="@Model.SelectedNewStream" />
+
+                        <div id="streamSubjectsWrap" class="mt-2" style="display:none;">
+                            <b>Subjects in Selected Stream:</b>
+                            <ul id="streamSubjectsList"></ul>
+                        </div>
+                        <hr />
+
+                        <!-- Justification -->
+                        <label for="Justification"><b>Why do you want to transfer?</b></label>
+                        <textarea id="Justification" name="Justification" class="form-control mb-1" rows="3" maxlength="@Model.MaxJustificationChars" placeholder="E.g., Career interest change..." required>@Model.Justification</textarea>
+                        <span id="justCounter" class="text-muted float-right" style="font-size:small;">0/@Model.MaxJustificationChars</span>
+                        @Html.ValidationMessageFor(m => m.Justification, "", new { @class = "text-danger" })
+
+                        <!-- File Upload (PDF Only) -->
+                        <div class="form-group mt-3">
+                            <label for="SupportingDocument"><b>Supporting Document (PDF, optional):</b></label>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="SupportingDocument" name="SupportingDocument" accept="application/pdf">
+                                <label class="custom-file-label" for="SupportingDocument">Choose PDF file...</label>
+                            </div>
+                            @Html.ValidationMessageFor(m => m.SupportingDocument, "", new { @class = "text-danger" })
+                        </div>
+
+                        <!-- Preview Button -->
+                        <button type="submit" class="btn btn-success mt-2 w-100">Preview Transfer Request <i class="fas fa-arrow-right ml-2"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Char counter for justification
+            $('#Justification').on('input', function () {
+                let len = $(this).val().length;
+                $('#justCounter').text(len + "/@Model.MaxJustificationChars");
+            }).trigger('input');
+
+            // Custom file input label
+            $('.custom-file-input').on('change', function () {
+                var fileName = $(this).val().split('\\').pop();
+                $(this).next('.custom-file-label').html(fileName);
+            });
+
+            // Stream select – shows subjects on select
+            $('.stream-select').on('click', function () {
+                if ($(this).hasClass('disabled')) return false;
+                $('.stream-select').removeClass('btn-primary').addClass('btn-outline-primary');
+                $(this).addClass('btn-primary').removeClass('btn-outline-primary');
+                var streamName = $(this).data('stream');
+                $('#SelectedNewStream').val(streamName);
+
+                var subjList = $(this).data('subjects').split(',');
+                $('#streamSubjectsList').html('');
+                subjList.forEach(function (s) { $('#streamSubjectsList').append('<li>' + s + '</li>'); });
+                $('#streamSubjectsWrap').slideDown();
+            });
+        });
+    </script>
+}

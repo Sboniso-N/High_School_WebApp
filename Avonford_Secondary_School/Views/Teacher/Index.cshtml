@@ -1,0 +1,278 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TeacherDashboardViewModel
+@{
+    ViewBag.Title = "Teacher Dashboard - Avonford Secondary School";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background-color: #fff;
+            color: #222;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+        .navbar-custom .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff !important;
+        }
+
+        .navbar-custom .navbar-nav > li > a {
+            color: #fff !important;
+            font-size: 16px;
+        }
+
+        .navbar-custom .navbar-nav > li > a:hover {
+            color: #222 !important;
+        }
+
+        .dashboard-header {
+            background-image: url('../../Content/images/grade-12e3-fun-picture.jpg');
+            background-size: cover;
+            height: 300px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header .header-overlay {
+            background: rgba(0, 0, 0, 0.6);
+            height: 100%;
+            width: 100%;
+            position: absolute;
+        }
+
+        .dashboard-header .header-content {
+            color: #fff;
+            text-align: center;
+            padding-top: 100px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .dashboard-header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-header p {
+            font-size: 18px;
+        }
+
+        .dashboard-container {
+            padding: 30px 15px;
+        }
+
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .subject-card {
+            background-color: #f7f7f7;
+            border: 2px solid #222;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .subject-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-bottom: 2px solid #222;
+            margin-bottom: 10px;
+        }
+
+        .subject-card h3 {
+            font-size: 22px;
+            color: #ff6600;
+        }
+
+        .subject-card p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .subject-card .btn {
+            margin: 5px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .btn-orange {
+            background-color: #ff6600;
+            border: none;
+            color: white;
+        }
+
+        .btn-orange:hover {
+            background-color: #e65c00;
+        }
+
+        .section {
+            padding: 60px 0;
+        }
+
+        .section-light {
+            background-color: #fff;
+            color: #222;
+        }
+
+        .section-dark {
+            background-color: #222;
+            color: #fff;
+        }
+
+        .section-dark h2 {
+            color: #ff6600;
+        }
+
+        footer {
+            background-color: #222;
+            color: #ccc;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        footer h4 {
+            color: #ff6600;
+        }
+
+        footer a {
+            color: #ff6600;
+        }
+
+        .fade-in {
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Nav Bar -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Teacher/Index">Avonford Secondary School</a>
+            </div>
+            <div class="collapse navbar-collapse" id="teacherNav">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/Teacher/Index">Dashboard</a></li>
+                    <li><a href="/Teacher/CreateAssessment">Schedule Assessment</a></li>
+                    <li><a href="/Teacher/GradeAssessments">Grade Assessments</a></li>
+                    <li><a href="/Teacher/TransferRequests">Student Tranfer Requests</a></li>
+                    <li><a href="/Account/Logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="header-overlay"></div>
+        <div class="header-content fade-in">
+            <h1>Welcome, Teacher!</h1>
+            <p>Empowering learners through quality instruction</p>
+        </div>
+    </div>
+
+    <!-- Subject Cards -->
+    <div class="container dashboard-container">
+        <h2 class="text-center fade-in">Your Assigned Subjects</h2>
+        <div class="subject-grid">
+            @foreach (var item in Model.AssignedSubjects)
+            {
+                <div class="subject-card fade-in">
+                    <img src="~/Content/images/OIP.jpg" alt="@item.SubjectName" />
+                    <h3>@item.SubjectName</h3>
+                    <p>Grade @item.GradeID @(item.StreamID.HasValue ? ("- Stream " + item.StreamID) : "")</p>
+                    @Html.ActionLink("Schedule Assessment", "CreateAssessment", "Teacher", new { subjectId = item.SubjectID }, new { @class = "btn btn-orange btn-sm" })
+                    @Html.ActionLink("Grade Assessments", "GradeAssessments", "Teacher", new { subjectId = item.SubjectID }, new { @class = "btn btn-info btn-sm" })
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- About Teaching Section -->
+    <section class="section section-light">
+        <div class="container">
+            <h2 class="text-center fade-in">Teaching Excellence</h2>
+            <div class="row fade-in">
+                <div class="col-md-6">
+                    <p>
+                        At Avonford Secondary School, our teachers play a vital role in shaping the minds of future leaders. We provide an environment where educators can thrive professionally while making a lasting impact on students' lives.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/79/Classroom_in_South_Africa.jpg" class="img-responsive" />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Development -->
+    <section class="section section-dark">
+        <div class="container">
+            <h2 class="text-center fade-in">Continuous Development</h2>
+            <div class="row fade-in">
+                <div class="col-md-12">
+                    <p>
+                        We encourage our teachers to grow through workshops, mentoring, and innovation. Your career path matters, and we’re here to support it.
+                    </p>
+                    <p>
+                        Our teacher community values collaboration, lifelong learning, and educational excellence.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Avonford Secondary School | Teacher Portal</p>
+        </div>
+    </footer>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.fade-in').css('opacity', 0).animate({ opacity: 1 }, 1000);
+        });
+    </script>
+
+</body>
+</html>

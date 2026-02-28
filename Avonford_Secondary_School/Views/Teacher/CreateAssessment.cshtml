@@ -1,0 +1,127 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.CreateAssessmentViewModel
+
+@{
+    ViewBag.Title = "Create New Assessment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string today = DateTime.Now.ToString("yyyy-MM-dd");
+}
+
+<!-- Teacher Navigation Bar -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+<nav class="navbar navbar-custom" style="background-color: #ff6600; border-radius: 0;">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/Teacher/Index" style="color: white;">Avonford Secondary - Teacher</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/Teacher/Index" style="color: white;">Dashboard</a></li>
+            <li><a href="/Teacher/CreateAssessment" style="color: white;">Create Assessment</a></li>
+            <li><a href="/Teacher/GradeAssessments" style="color: white;">Grade Assessments</a></li>
+            <li><a href="/Account/Logout" style="color: white;">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Page Styles -->
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #fff;
+        color: #222;
+    }
+
+    h2 {
+        color: #ff6600;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .container-box {
+        padding: 30px;
+        background-color: #f9f9f9;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        max-width: 800px;
+        margin: 0 auto;
+        margin-bottom: 50px;
+    }
+
+    .form-group label {
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        background-color: #ff6600;
+        border-color: #e65c00;
+        font-weight: bold;
+    }
+
+        .btn-primary:hover {
+            background-color: #e65c00;
+        }
+
+    .text-danger {
+        color: red;
+    }
+</style>
+
+<div class="container container-box">
+    <h2>Create New Assessment</h2>
+
+    @using (Html.BeginForm("CreateAssessment", "Teacher", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.SelectedGradeSubjectTeacherID)
+            @Html.DropDownListFor(m => m.SelectedGradeSubjectTeacherID, Model.AvailableSubjects, "Select Subject", new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.SelectedGradeSubjectTeacherID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.AssessmentName)
+            @Html.TextBoxFor(m => m.AssessmentName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.AssessmentName, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.AssessmentType)
+            @Html.DropDownListFor(m => m.AssessmentType, new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Quiz", Value = "Quiz" },
+                new SelectListItem { Text = "Test", Value = "Test" },
+                new SelectListItem { Text = "Exam", Value = "Exam" }
+            }, "Select Assessment Type", new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.AssessmentType, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.AssessmentDate)
+            @Html.TextBoxFor(m => m.AssessmentDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", min = today })
+            @Html.ValidationMessageFor(m => m.AssessmentDate, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.StartTime)
+            @Html.TextBoxFor(m => m.StartTime, new { @class = "form-control", placeholder = "HH:mm" })
+            @Html.ValidationMessageFor(m => m.StartTime, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.EndTime)
+            @Html.TextBoxFor(m => m.EndTime, new { @class = "form-control", placeholder = "HH:mm" })
+            @Html.ValidationMessageFor(m => m.EndTime, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Instructions)
+            @Html.TextAreaFor(m => m.Instructions, new { @class = "form-control", rows = "4" })
+            @Html.ValidationMessageFor(m => m.Instructions, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group text-center">
+            <input type="submit" value="Create Assessment" class="btn btn-primary btn-lg" />
+        </div>
+    }
+</div>

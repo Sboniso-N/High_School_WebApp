@@ -1,0 +1,141 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.ReturnVMs.AdminReturnsQueueVM
+@{
+    ViewBag.Title = "Returns Queue";
+    var tabs = new[] { "Pending", "NeedsInfo", "Approved", "Declined", "Refunded" };
+}
+<style>
+    .wrap {
+        max-width: 1100px;
+        margin: 24px auto;
+        padding: 16px
+    }
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap
+    }
+
+    .tab {
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        text-decoration: none;
+        color: #111827
+    }
+
+        .tab.active {
+            background: #111827;
+            color: #fff
+        }
+
+    .card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.04);
+        padding: 14px;
+        margin-top: 12px
+    }
+
+    .row {
+        display: grid;
+        grid-template-columns: 120px 1fr 1fr 120px 100px;
+        gap: 10px;
+        align-items: center;
+        padding: 10px;
+        border-top: 1px solid #f1f5f9
+    }
+
+        .row:first-child {
+            border-top: 0
+        }
+
+    .badge {
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-size: 12px
+    }
+
+    .search {
+        width: 260px;
+        padding: 8px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px
+    }
+
+    .toast {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        background: #111827;
+        color: #fff;
+        padding: 12px 14px;
+        border-radius: 10px;
+        display: none
+    }
+</style>
+
+<div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2 style="margin:0">Returns Queue</h2>
+        <input id="q" class="search" placeholder="Search email / reason / RMA / Order" />
+    </div>
+
+    <div class="tabs" style="margin-top:10px">
+        @foreach (var t in tabs)
+        {
+            var url = Url.Action("ReturnsQueue", "Admin", new { status = t });
+            <a class="tab @(Model.Filter==t?"active":"")" href="@url">@t</a>
+        }
+    </div>
+
+    <div class="card" id="list">
+        <div class="row" style="font-weight:600;background:#f8fafc;border-radius:10px">
+            <div>RMA / Order</div>
+            <div>Buyer</div>
+            <div>Seller</div>
+            <div>Reason</div>
+            <div>Photos</div>
+        </div>
+        @foreach (var i in Model.Items)
+        {
+            <a class="row item" href="@Url.Action("ReviewReturn","Admin", new { id=i.ReturnID })" style="text-decoration:none;color:inherit">
+                <div>#@i.ReturnID <div class="help">Order @i.OrderID</div></div>
+                <div>@i.BuyerEmail</div>
+                <div>@i.SellerEmail</div>
+                <div>
+                    @i.Reason <span class="badge" style="margin-left:6px;background:#eef2ff;color:#3730a3">@i.Status</span>
+                    <div class="help">@i.AgeDays day(s) old</div>
+                </div>
+                <div>@i.PhotoCount</div>
+            </a>
+        }
+        @if (!Model.Items.Any())
+        {<div style="padding:16px;color:#64748b">No items.</div>}
+    </div>
+</div>
+
+<div class="toast" id="toast">@TempData["Toast"]</div>
+
+@section scripts{
+    <script>
+        (function () {
+            // toast
+            var t = document.getElementById('toast');
+            if (t && t.textContent.trim().length) { t.style.display = 'block'; setTimeout(() => t.style.display = 'none', 2500); }
+
+            // client filter
+            var q = document.getElementById('q');
+            q.addEventListener('input', function () {
+                var val = this.value.toLowerCase();
+                document.querySelectorAll('#list .item').forEach(function (el) {
+                    el.style.display = el.textContent.toLowerCase().includes(val) ? '' : 'none';
+                });
+            });
+
+            // light auto-refresh every 90s to keep queue fresh
+            setTimeout(function () { location.reload(); }, 90000);
+        })();
+    </script>
+}

@@ -1,0 +1,16 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.AttendanceConfirmationVM
+@{
+    ViewBag.Title = "Attendance Confirmation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <h2>Attendance Confirmation</h2>
+    <div class="alert alert-success">
+        <b>@Model.StudentName</b><br />
+        <b>Class:</b> @Model.ClassName<br />
+        <b>Tutor:</b> @Model.TutorName<br />
+        <b>Time:</b> @Model.TimeConfirmed.ToString("yyyy-MM-dd HH:mm")<br />
+        <b>Status:</b> <span class="badge bg-success">@Model.Status</span>
+    </div>
+    <a href="@Url.Action("UpcomingSessions", "Student")" class="btn btn-outline-primary">Back to Upcoming Sessions</a>
+</div>

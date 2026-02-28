@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Title = "Scan Attendance (QR)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+
+<div class="container py-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4>Scan Attendance QR Code</h4>
+        </div>
+        <div class="card-body">
+            <form id="attendanceForm">
+                <div class="mb-3 row">
+                    <label class="col-md-3 col-form-label">Student ID:</label>
+                    <div class="col-md-9">
+                        <input type="text" id="StudentID" name="StudentID" class="form-control" readonly />
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-md-3 col-form-label">Student Name:</label>
+                    <div class="col-md-9">
+                        <input type="text" id="StudentName" name="StudentName" class="form-control" readonly />
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-md-3 col-form-label">Session ID:</label>
+                    <div class="col-md-9">
+                        <input type="text" id="SessionID" name="SessionID" class="form-control" readonly />
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-md-3 col-form-label">Class ID:</label>
+                    <div class="col-md-9">
+                        <input type="text" id="TutorClassID" name="TutorClassID" class="form-control" readonly />
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-md-3 col-form-label">Scan Time:</label>
+                    <div class="col-md-9">
+                        <input type="text" id="Timestamp" name="Timestamp" class="form-control" readonly />
+                    </div>
+                </div>
+                <div class="mb-3 text-center">
+                    <button type="button" class="btn btn-primary" id="startScanBtn">
+                        <i class="fa fa-qrcode"></i> Scan QR Code
+                    </button>
+                </div>
+                <div class="mb-3 text-center">
+                    <div id="qr-reader" style="width:320px; height:320px; margin:auto; display:none; border:2px solid #0275d8; border-radius:10px;"></div>
+                </div>
+                <div class="mb-3 text-center">
+                    <button type="submit" class="btn btn-success" id="confirmBtn" disabled>
+                        <i class="fa fa-check"></i> Confirm Attendance
+                    </button>
+                </div>
+            </form>
+            <div id="resultMessage" class="alert mt-3 d-none"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <!-- Use the stable working CDN for html5-qrcode -->
+    <script src="https://unpkg.com/html5-qrcode@2.2.1/html5-qrcode.min.js"></script>
+    <script>
+        let qrScannerStarted = false;
+        let scannedData = null;
+        let html5QrCode;
+
+        function fillFields(data) {
+            $("#StudentID").val(data.StudentID || "");
+            $("#StudentName").val(data.StudentName || "");
+            $("#SessionID").val(data.SessionID || "");
+            $("#TutorClassID").val(data.TutorClassID || "");
+            $("#Timestamp").val(data.Timestamp || "");
+            $("#confirmBtn").prop("disabled", false);
+        }
+
+        $("#startScanBtn").on("click", function () {
+            $("#qr-reader").show();
+            $("#resultMessage").addClass("d-none");
+            if (qrScannerStarted) return;
+            qrScannerStarted = true;
+
+            if (!window.Html5Qrcode) {
+                $("#resultMessage").removeClass("d-none").removeClass("alert-success").addClass("alert-danger")
+                    .text("QR scanner library not loaded. Check your internet or script tags.");
+                return;
+            }
+
+            html5QrCode = new Html5Qrcode("qr-reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText, decodedResult) => {
+                    try {
+                        scannedData = JSON.parse(decodedText);
+                        fillFields(scannedData);
+                        html5QrCode.stop().then(() => {
+                            $("#qr-reader").hide();
+                        });
+                        $("#resultMessage").removeClass("d-none").addClass("alert-success").removeClass("alert-danger")
+                            .text("QR Code scanned successfully. Please confirm attendance.");
+                    } catch (e) {
+                        $("#resultMessage").removeClass("d-none").removeClass("alert-success").addClass("alert-danger")
+                            .text("Invalid QR code data.");
+                    }
+                },
+                (errorMessage) => {
+                    // Ignore scan errors (e.g., no QR found), but you can log if desired
+                }
+            ).catch(err => {
+                $("#resultMessage").removeClass("d-none").removeClass("alert-success").addClass("alert-danger")
+                    .text("Camera error: " + err);
+            });
+        });
+
+        $("#attendanceForm").on("submit", function (e) {
+            e.preventDefault();
+            if (!scannedData) return;
+            $.ajax({
+                url: '@Url.Action("ConfirmAttendanceFromQR", "Tutor")',
+                type: 'POST',
+                data: {
+                    qrData: JSON.stringify(scannedData),
+                    sessionId: $("#SessionID").val()
+                },
+                success: function (resp) {
+                    if (resp.success) {
+                        $("#resultMessage").removeClass("d-none").removeClass("alert-danger").addClass("alert-success").text("Attendance confirmed!");
+                        $("#confirmBtn").prop("disabled", true);
+                    } else {
+                        $("#resultMessage").removeClass("d-none").removeClass("alert-success").addClass("alert-danger").text("Attendance could not be recorded.");
+                    }
+                },
+                error: function () {
+                    $("#resultMessage").removeClass("d-none").removeClass("alert-success").addClass("alert-danger").text("Error submitting attendance.");
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,42 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.PrivateSessionConfirmationVM
+@{
+    ViewBag.Title = "Private Session Booking Confirmation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <div class="card shadow mx-auto" style="max-width:500px;">
+        <div class="card-header bg-success text-white text-center">
+            <h4>Private Session Requested!</h4>
+        </div>
+        <div class="card-body text-center">
+            <i class="fa fa-check-circle text-success" style="font-size:48px;"></i>
+            <p class="mt-3 mb-1">
+                <b>Session Request ID:</b> @Model.RequestID
+            </p>
+            <p class="mb-1">
+                <b>Tutor:</b> @Model.TutorName
+            </p>
+            <p class="mb-1">
+                <b>Session Time:</b>
+                <br />
+                <span class="badge bg-info text-dark">
+                    @Model.StartTime.ToString("yyyy-MM-dd HH:mm") – @Model.EndTime.ToString("HH:mm")
+                </span>
+            </p>
+            <p class="mb-3">
+                <b>Status:</b>
+                <span class="badge bg-warning text-dark">@Model.Status</span>
+            </p>
+            @if (Model.Status == "Pending")
+            {
+                <div class="alert alert-info mt-2">
+                    Your request has been sent to the tutor.<br />
+                    You will be notified once they approve or reject the session.
+                </div>
+            }
+            <a href="@Url.Action("MyPrivateSessions", "Student")" class="btn btn-outline-primary mt-2">
+                <i class="fa fa-calendar"></i> View My Private Sessions
+            </a>
+        </div>
+    </div>
+</div>

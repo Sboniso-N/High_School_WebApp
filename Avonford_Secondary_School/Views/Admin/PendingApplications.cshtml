@@ -1,0 +1,164 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.PendingApplicationsViewModel
+
+@{
+    ViewBag.Title = "Pending Applications";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff;
+            color: #222;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+            .navbar-custom .navbar-brand {
+                font-size: 24px;
+                font-weight: bold;
+                color: #fff !important;
+            }
+
+            .navbar-custom .navbar-nav > li > a {
+                color: #fff !important;
+                font-size: 16px;
+            }
+
+                .navbar-custom .navbar-nav > li > a:hover {
+                    color: #222 !important;
+                }
+
+        .admin-header {
+            background-image: url('../../Content/images/grade-12e3-fun-picture.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 250px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+            .admin-header .overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.6);
+            }
+
+            .admin-header .text {
+                position: relative;
+                z-index: 1;
+                color: white;
+                text-align: center;
+                padding-top: 80px;
+            }
+
+                .admin-header .text h1 {
+                    font-size: 38px;
+                    font-weight: bold;
+                }
+
+        .content-section {
+            padding: 40px 20px;
+        }
+
+        table.table {
+            background-color: #fff;
+            border: 1px solid #ccc;
+        }
+
+        .table thead th {
+            background-color: #ff6600;
+            color: #fff;
+            text-align: center;
+        }
+
+        .table td, .table th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .btn-info {
+            background-color: #222;
+            border-color: #222;
+        }
+
+            .btn-info:hover {
+                background-color: #ff6600;
+                border-color: #ff6600;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Admin/Index">Avonford Admin Panel</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Admin/PendingApplications">Pending Applications</a></li>
+                <li><a href="/Admin/RegisterTeacher">Register Teacher</a></li>
+                <li><a href="/Admin/AllocateTeacher">Allocate Teachers</a></li>
+                <li><a href="/Account/Logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="admin-header">
+        <div class="overlay"></div>
+        <div class="text">
+            <h1>Pending Applications</h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container content-section">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Application ID</th>
+                    <th>Full Name</th>
+                    <th>Grade</th>
+                    <th>Date Applied</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.PendingList)
+                {
+                    <tr>
+                        <td>@item.ApplicationID</td>
+                        <td>@item.FullName</td>
+                        <td>@item.SelectedGrade</td>
+                        <td>@item.CreatedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@item.ApplicationStatus</td>
+                        <td>
+                            @Html.ActionLink("View", "ViewApplication", "Admin", new { id = item.ApplicationID }, new { @class = "btn btn-info" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

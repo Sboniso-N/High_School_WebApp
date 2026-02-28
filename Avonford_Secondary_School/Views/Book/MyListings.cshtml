@@ -1,0 +1,54 @@
+﻿@* ========================= Views/Book/MyListings.cshtml ========================= *@
+@model IEnumerable<Avonford_Secondary_School.Models.ViewModels.MyListingItemVM>
+@{
+    ViewBag.Title = "My Listings";
+    Func<string, string> badge = s =>
+    {
+        switch ((s ?? "").ToLowerInvariant())
+        {
+            case "pending": return "background:#fff8e1;border:1px solid #ffe082;color:#8a6d3b";
+            case "active": return "background:#e9f7ef;border:1px solid #c1e9d3;color:#2e7d32";
+            case "sold": return "background:#eceff1;border:1px solid #cfd8dc;color:#546e7a";
+            case "removed": return "background:#fdecea;border:1px solid #f5c6cb;color:#c9302c";
+            default: return "background:#f5f5f5;border:1px solid #ddd;color:#666";
+        }
+    };
+}
+<h2 class="mb-3">My Listings</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No listings yet. Ready to <a href="@Url.Action("Sell","Book")">sell your first book</a>?</div>
+}
+else
+{
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px">
+        @foreach (var item in Model)
+        {
+            <div style="border:1px solid #eee;border-radius:10px;overflow:hidden;background:#fff;display:flex;flex-direction:column">
+                <div style="height:160px;background:#fafafa;display:flex;align-items:center;justify-content:center">
+                    @if (!string.IsNullOrEmpty(item.MainImageBase64))
+                    {
+                        <img src="data:image/*;base64,@item.MainImageBase64" alt="Cover" style="max-height:150px;max-width:95%;object-fit:contain" />
+                    }
+                    else
+                    {
+                        <div class="text-muted" style="font-size:13px">No image</div>
+                    }
+                </div>
+                <div style="padding:12px 12px 6px 12px">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <strong>@item.Title</strong>
+                        <span class="badge" style="@badge(item.Status)">@item.Status</span>
+                    </div>
+                    <div class="text-muted" style="font-size:12px;margin-top:4px">@item.Condition • Listed @item.CreatedAt.ToString("yyyy-MM-dd")</div>
+                    <div style="margin-top:8px;font-weight:600">R @item.Price.ToString("0.00")</div>
+                </div>
+                <div style="padding:0 12px 12px 12px; margin-top:auto">
+                    <a class="btn btn-default btn-sm" href="@Url.Action("Sell","Book")" title="Create another listing">Relist</a>
+                    @* Future: add Edit/Delete/Details when you wire those actions *@
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,115 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.ViewAttemptsViewModel
+
+@{
+    ViewBag.Title = "View Attempts for " + Model.AssessmentName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Bootstrap & Custom Styling -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+<style>
+    body {
+        background-color: #fff;
+        color: #222;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .navbar-custom {
+        background-color: #ff6600;
+        border: none;
+        border-radius: 0;
+        margin-bottom: 0;
+    }
+
+        .navbar-custom .navbar-brand,
+        .navbar-custom .navbar-nav > li > a {
+            color: #fff !important;
+            font-weight: bold;
+        }
+
+            .navbar-custom .navbar-nav > li > a:hover {
+                color: #222 !important;
+            }
+
+    .container-attempts {
+        max-width: 950px;
+        margin: 30px auto;
+        background-color: #f9f9f9;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        text-align: center;
+        color: #ff6600;
+        margin-bottom: 30px;
+    }
+
+    .table thead {
+        background-color: #ff6600;
+        color: #fff;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+    .alert-success {
+        font-weight: bold;
+    }
+</style>
+
+<!-- Teacher Nav Bar -->
+<nav class="navbar navbar-custom">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/Teacher/Index">Avonford - Teacher</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/Teacher/Index">Dashboard</a></li>
+            <li><a href="/Teacher/CreateAssessment">Create Assessment</a></li>
+            <li><a href="/Teacher/GradeAssessments">Grade Assessments</a></li>
+            <li><a href="/Account/Logout">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Attempts Container -->
+<div class="container container-attempts">
+    <h2>Attempts for @Model.AssessmentName</h2>
+
+    @if (TempData["GradingMessage"] != null)
+    {
+        <div class="alert alert-success text-center">
+            @TempData["GradingMessage"]
+        </div>
+    }
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Attempt Start Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var attempt in Model.Attempts)
+            {
+                <tr>
+                    <td>@attempt.StudentName</td>
+                    <td>@attempt.AttemptStartTime.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>
+                        @Html.ActionLink("Grade Attempt", "GradeAttempt", "Teacher", new { attemptId = attempt.AttemptID }, new { @class = "btn btn-success" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

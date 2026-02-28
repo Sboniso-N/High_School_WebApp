@@ -1,0 +1,202 @@
+﻿@* ========================= Views/Book/Index.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.LibraryIndexVM
+@{
+    ViewBag.Title = "Explore Books";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Theme accents */
+    .accent { color:#ff6600; }
+    .btn-accent { background:#ff6600; color:#fff; border:none; }
+    .btn-accent:hover { background:#e65c00; color:#fff; }
+    .pill { display:inline-block; padding:4px 10px; border-radius:999px; background:#ffe8d9; color:#b34700; font-size:12px; }
+    .card {
+        background:#fff; border:1px solid #eee; border-radius:14px; overflow:hidden;
+        box-shadow:0 8px 20px rgba(0,0,0,.06); transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .card:hover { transform:translateY(-4px); box-shadow:0 12px 26px rgba(0,0,0,.09); }
+    .card-img {
+        width:100%; height:190px; object-fit:cover; background:#f7f7f7; filter:saturate(1.05);
+    }
+    .skeleton { position:relative; background:linear-gradient(90deg,#f1f1f1 25%,#f7f7f7 37%,#f1f1f1 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
+    @@keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:0 0} }
+    .filter-bar {
+        position:sticky; top:0; z-index:2; background:#fff; border-bottom:1px solid #eee; padding:12px 0;
+    }
+    .range-wrap { display:flex; gap:8px; align-items:center }
+    .range-wrap input[type=number]{max-width:110px}
+    .fade-in { opacity:0; transform:translateY(12px); transition:all .5s ease; }
+    .fade-in.visible { opacity:1; transform:none; }
+    .pagination>li>a,.pagination>li>span{color:#ff6600}
+    .pagination>.active>a,.pagination>.active>span{background:#ff6600;border-color:#ff6600}
+</style>
+
+<div class="container">
+
+    <div class="filter-bar">
+        @using (Html.BeginForm("Index", "Book", FormMethod.Get, new { id = "filterForm", @class = "form-inline" }))
+        {
+            <div class="row">
+                <div class="col-sm-4" style="margin-bottom:8px">
+                    <div class="input-group" style="width:100%">
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                        @Html.TextBoxFor(m => m.Filters.Query, new { @class = "form-control", placeholder = "Search title, author, or ISBN…", id = "q" })
+                    </div>
+                </div>
+
+                <div class="col-sm-2" style="margin-bottom:8px">
+                    @Html.DropDownListFor(m => m.Filters.Condition, Model.Filters.ConditionOptions, new { @class = "form-control", id = "cond" })
+                </div>
+
+                <div class="col-sm-4" style="margin-bottom:8px">
+                    <div class="range-wrap">
+                        <label class="hidden-xs" style="margin:0 6px 0 0">Price</label>
+                        @Html.TextBoxFor(m => m.Filters.MinPrice, new { type = "number", step = "1", min = "0", @class = "form-control", placeholder = "Min", id = "minP" })
+                        <span>–</span>
+                        @Html.TextBoxFor(m => m.Filters.MaxPrice, new { type = "number", step = "1", min = "0", @class = "form-control", placeholder = "Max", id = "maxP" })
+                    </div>
+                </div>
+
+                <div class="col-sm-2" style="margin-bottom:8px">
+                    @Html.DropDownListFor(m => m.Filters.SortBy, Model.Filters.SortOptions, new { @class = "form-control", id = "sort" })
+                </div>
+            </div>
+
+            @Html.HiddenFor(m => m.Filters.Page, new { id = "page" })
+            @Html.HiddenFor(m => m.Filters.PageSize)
+        }
+        <div class="text-right" style="margin-top:6px">
+            <span class="pill"><strong>@Model.TotalCount</strong> items</span>
+            <a class="btn btn-accent btn-sm" href="@Url.Action("Sell","Book")">
+                <span class="glyphicon glyphicon-upload"></span> List / Sell Your Book
+            </a>
+        </div>
+    </div>
+
+    <div id="grid" class="row" style="margin-top:16px">
+        @if (Model.Results == null || !Model.Results.Any())
+        {
+            <div class="col-xs-12 text-center" style="padding:40px 0">
+                <img src="~/Content/images/empty.png" alt="No books" style="width:100px;opacity:.6" />
+                <h4 class="accent" style="margin-top:12px">No matches… try adjusting your filters.</h4>
+            </div>
+        }
+        else
+        {
+            foreach (var b in Model.Results)
+            {
+                <div class="col-sm-6 col-md-4 fade-in">
+                    <div class="card">
+                        <div class="skeleton" data-skel>
+                            <img class="card-img" data-img src="@(string.IsNullOrEmpty(b.MainImageBase64) ? Url.Content("~/Content/images/Edu-DHS-e1675942435742-780x341.jpg") : ("data:image;base64," + b.MainImageBase64))" alt="@b.Title cover" />
+                        </div>
+                        <div style="padding:14px 16px">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <h4 style="margin:0 8px 6px 0; font-weight:600">@b.Title</h4>
+                                <span class="pill">@b.Condition</span>
+                            </div>
+                            <div style="color:#666; margin-bottom:8px">
+                                @(!string.IsNullOrWhiteSpace(b.Author) ? b.Author : "Unknown author")
+                            </div>
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <div>
+                                    <span style="font-weight:700">R @b.Price.ToString("0.00")</span>
+                                    @if (b.IsNegotiable)
+                                    {<small class="text-muted">&nbsp;(neg.)</small>}
+                                </div>
+                                <div>
+                                    <a class="btn btn-xs btn-default" href="@Url.Action("Details","Book", new { id = b.BookID })">
+                                        View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Page navigation" class="text-center">
+            <ul class="pagination">
+                @{
+                    var p = Model.Filters.Page;
+                    Func<int, string> pageUrl = i => Url.Action("Index", new
+                    {
+                        Query = Model.Filters.Query,
+                        Condition = Model.Filters.Condition,
+                        MinPrice = Model.Filters.MinPrice,
+                        MaxPrice = Model.Filters.MaxPrice,
+                        SortBy = Model.Filters.SortBy,
+                        Page = i,
+                        PageSize = Model.Filters.PageSize
+                    });
+                }
+                <li class="@(p==1?"disabled":"")"><a href="@(p==1?"#":pageUrl(p-1))">&laquo;</a></li>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="@(i==p?"active":"")"><a href="@pageUrl(i)">@i</a></li>
+                }
+                <li class="@(p==Model.TotalPages?"disabled":"")"><a href="@(p==Model.TotalPages?"#":pageUrl(p+1))">&raquo;</a></li>
+            </ul>
+        </nav>
+    }
+</div>
+
+@section scripts{
+    <script>
+(function(){
+    // ---- reveal on scroll
+    const io = new IntersectionObserver(es=>es.forEach(e=>{
+        if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+    }),{rootMargin:"0px 0px -10% 0px"});
+    document.querySelectorAll('.fade-in').forEach(x=>io.observe(x));
+
+    // ---- image skeletons
+    document.querySelectorAll('[data-img]').forEach(img=>{
+        img.addEventListener('load',()=> img.parentElement.removeAttribute('data-skel'));
+        // fallback: remove skeleton class
+        setTimeout(()=> img.parentElement.removeAttribute('data-skel'),1200);
+    });
+
+    // ---- debounce helper
+    const debounce=(fn,ms)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(this,a),ms);}};
+
+    // ---- auto-submit on change (with debounce)
+    const form = document.getElementById('filterForm');
+    const submitDebounced = debounce(()=>form.submit(), 420);
+
+    ['q','cond','minP','maxP','sort'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.addEventListener('input', submitDebounced);
+        el.addEventListener('change', submitDebounced);
+    });
+
+    // ---- persist filters in localStorage
+    const key='libraryFilters';
+    try {
+        // restore
+        const saved = JSON.parse(localStorage.getItem(key)||'{}');
+        ['q','cond','minP','maxP','sort'].forEach(id=>{
+            if(saved[id]!==undefined && document.getElementById(id)){
+                document.getElementById(id).value = saved[id];
+            }
+        });
+        // save on change
+        form.addEventListener('input', ()=> {
+            const obj = {
+                q: q.value, cond: cond.value, minP: minP.value, maxP: maxP.value, sort: sort.value
+            };
+            localStorage.setItem(key, JSON.stringify(obj));
+        });
+    } catch(e){}
+
+    // ---- reset page to 1 on any filter change
+    form.addEventListener('input', ()=> document.getElementById('page').value = 1);
+})();
+    </script>
+}

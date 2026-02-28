@@ -1,0 +1,63 @@
+﻿@* ========================= Views/Book/OrderSuccess.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.PurchaseSuccessVM
+@{
+    ViewBag.Title = "Order Success";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .centered { text-align:center; padding:40px 0 }
+    .check {
+        width:110px;height:110px;margin:0 auto 12px;border-radius:50%;
+        background:#e9f9ef; position:relative; overflow:hidden;
+        box-shadow:0 10px 30px rgba(0,0,0,.08);
+    }
+    .check:after{
+        content:""; position:absolute; left:28px; top:50px; width:22px; height:44px;
+        border:6px solid #28a745; border-top:0; border-left:0; transform:rotate(40deg) scale(0);
+        transform-origin:left top; animation:tick .5s .2s ease forwards;
+    }
+    @@keyframes tick { to { transform:rotate(40deg) scale(1); } }
+    .btn-accent { background:#ff6600; color:#fff; border:none; }
+    .btn-accent:hover { background:#e65c00; color:#fff; }
+    canvas#confetti{ position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:9999 }
+</style>
+
+<canvas id="confetti"></canvas>
+
+<div class="container">
+    <div class="centered">
+        <div class="check"></div>
+        <h2>Thank you! 🎉</h2>
+        <p>Your order <strong>#@Model.OrderID</strong> for <em>@Model.Title</em> is confirmed.</p>
+        <p>Total paid: <strong>R @Model.Total.ToString("0.00")</strong> — Delivery: <strong>@Model.DeliveryType</strong></p>
+        <div style="margin-top:16px">
+            <a class="btn btn-accent" href="@Url.Action("MyOrders","Book")">View My Orders</a>
+            <a class="btn btn-default" href="@Url.Action("Index","Book")">Browse More</a>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+// Tiny confetti (no libs)
+(function(){
+  const c = document.getElementById('confetti'), ctx = c.getContext('2d');
+  let w,h; const P=[]; const N=120;
+  function resize(){ w= c.width = window.innerWidth; h = c.height = window.innerHeight }
+  window.addEventListener('resize', resize); resize();
+  for(let i=0;i<N;i++){ P.push({x:Math.random()*w,y:-20-Math.random()*h, s: 2+Math.random()*4, v: 2+Math.random()*3, a:Math.random()*Math.PI}); }
+  function color(){ const r=[ '#ff6600', '#ffd166', '#06d6a0', '#118ab2', '#ef476f' ]; return r[(Math.random()*r.length)|0]; }
+  function step(){
+    ctx.clearRect(0,0,w,h);
+    P.forEach(p=>{
+      p.y+=p.v; p.x+=Math.sin((p.y+p.a)/30)*2;
+      ctx.fillStyle=color(); ctx.fillRect(p.x,p.y,p.s,p.s*0.6);
+      if(p.y>h+20){ p.y=-20; p.x=Math.random()*w; }
+    });
+    requestAnimationFrame(step);
+  }
+  step();
+  setTimeout(()=> c.remove(), 4000);
+})();
+    </script>
+}

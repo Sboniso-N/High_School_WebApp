@@ -1,0 +1,55 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.SessionFeedbackVM
+@{
+    ViewBag.Title = "Rate & Review Session";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <h2>Rate & Review Session</h2>
+    <h4>@Model.ClassName</h4>
+    <div>Date: @Model.SessionDate.ToString("yyyy-MM-dd")</div>
+    <div>Tutor: @Model.TutorName</div>
+    @if (Model.Submitted)
+    {
+        <div class="alert alert-success mt-3">You already submitted feedback for this session.</div>
+    }
+    else
+    {
+        using (Html.BeginForm("RateSession", "Student", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.TutorSessionID)
+            @Html.HiddenFor(m => m.StudentID)
+            @Html.HiddenFor(m => m.TutorID)
+            <div class="form-group">
+                <label>Rating</label>
+                <div id="star-rating" class="mb-2"></div>
+                @Html.HiddenFor(m => m.Rating)
+            </div>
+            <div class="form-group">
+                <label>Feedback (optional)</label>
+                @Html.TextAreaFor(m => m.Feedback, new { @class = "form-control", rows = 3 })
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        }
+    }
+</div>
+@section Scripts{
+    <script>
+        $(function () {
+            var rating = @Model.Rating;
+            function renderStars() {
+                var html = "";
+                for (var i = 1; i <= 5; i++) {
+                    html += "<span class='star' data-val='" + i + "' style='font-size:2em;cursor:pointer; color:" + (i <= rating ? "#ffbc00" : "#aaa") + "'>&#9733;</span>";
+                }
+                $("#star-rating").html(html);
+            }
+            $("#star-rating").on("click", ".star", function () {
+                rating = $(this).data("val");
+                $("[name='Rating']").val(rating);
+                renderStars();
+            });
+            renderStars();
+        });
+    </script>
+}

@@ -1,0 +1,116 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.SubmissionConfirmationViewModel
+
+@{
+    ViewBag.Title = "Submission Confirmation";
+    Layout = null; // Remove if you're using _Layout.cshtml globally
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+            .navbar-custom .navbar-brand {
+                color: #fff !important;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .navbar-custom .navbar-nav > li > a {
+                color: #fff !important;
+                font-size: 16px;
+            }
+
+                .navbar-custom .navbar-nav > li > a:hover {
+                    color: #222 !important;
+                }
+
+        .container {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .alert-success {
+            font-size: 16px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #dff0d8;
+            border-color: #d0e9c6;
+            color: #3c763d;
+        }
+
+        .btn-primary {
+            background-color: #ff6600;
+            border-color: #ff6600;
+            font-weight: bold;
+        }
+
+            .btn-primary:hover {
+                background-color: #e65c00;
+                border-color: #e65c00;
+            }
+
+        .footer {
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Student/Index">Avonford Secondary School</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Student/Index">Dashboard</a></li>
+                <li><a href="/Account/Logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Assessment Submitted</h2>
+
+        <div class="alert alert-success">
+            Your assessment attempt was submitted successfully on
+            <strong>@Model.SubmissionTime.ToString("yyyy-MM-dd HH:mm")</strong>.
+        </div>
+
+        <p>
+            <a href="@Url.Action("Index", "Student")" class="btn btn-primary">Go to Dashboard</a>
+        </p>
+    </div>
+
+    <div class="footer">
+        &copy; @DateTime.Now.Year Avonford Secondary School. All rights reserved.
+    </div>
+
+</body>
+</html>

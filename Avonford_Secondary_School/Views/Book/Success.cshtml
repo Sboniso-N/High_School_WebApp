@@ -1,0 +1,26 @@
+﻿@* ========================= Views/Book/Success.cshtml ========================= *@
+@{
+    ViewBag.Title = "Listing Submitted";
+    var id = (int)ViewBag.ListingId;
+}
+<style>
+    @@keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05);opacity:1} 100%{transform:scale(1)} }
+    .check-circle{
+        width:88px;height:88px;border-radius:50%;background:#e9f7ef;border:2px solid #c1e9d3;
+        display:flex;align-items:center;justify-content:center;margin:0 auto 10px auto;animation:pop .6s ease;
+    }
+    .check-circle svg{width:42px;height:42px}
+    .badge-pill{border-radius:999px;padding:6px 10px}
+</style>
+
+<div class="text-center" style="margin-top:20px">
+    <div class="check-circle">
+        <svg viewBox="0 0 24 24" fill="#28a745"><path d="M9 16.2l-3.5-3.5L4 14.2 9 19l11-11-1.5-1.5z" /></svg>
+    </div>
+    <h2>Your book is listed! 🎉</h2>
+    <p class="text-muted">Listing reference <span class="badge badge-pill" style="background:#eef5ff;border:1px solid #cfe2ff">@id</span></p>
+    <div style="margin-top:16px">
+        <a class="btn btn-primary" href="@Url.Action("MyListings","Book")">Go to My Listings</a>
+        <a class="btn btn-default" href="@Url.Action("Sell","Book")">List another book</a>
+    </div>
+</div>

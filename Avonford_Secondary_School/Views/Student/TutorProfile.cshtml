@@ -1,0 +1,19 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.AvailableTutorVM
+@{
+    ViewBag.Title = "Tutor Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4" style="max-width:500px;">
+    <div class="card shadow">
+        <div class="card-body text-center">
+            <img src="@(Model.ProfilePicBase64 != null ? "data:image/jpeg;base64," + Model.ProfilePicBase64 : "/Content/img/no-profile.png")"
+                 class="rounded-circle mb-2" style="width:90px;height:90px;object-fit:cover;">
+            <h3>@Model.TutorName</h3>
+            <p><b>Qualifications:</b> @Model.Qualifications</p>
+            <p><b>Email:</b> <a href="mailto:@Model.Email">@Model.Email</a></p>
+            <hr>
+            <h5>Bio</h5>
+            <p>@Model.Bio</p>
+        </div>
+    </div>
+</div>

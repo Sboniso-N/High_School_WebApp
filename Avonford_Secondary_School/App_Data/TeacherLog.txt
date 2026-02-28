@@ -1,0 +1,39 @@
+2025-03-27 02:22:28 - Teacher Dashboard loaded for teacher ID: 2
+2025-03-27 02:22:38 - CreateAssessment GET loaded for teacher ID: 2
+2025-03-27 02:25:41 - Teacher Dashboard loaded for teacher ID: 2
+2025-03-27 02:25:51 - CreateAssessment GET loaded for teacher ID: 2
+2025-03-27 02:31:56 - Teacher Dashboard loaded for teacher ID: 1
+2025-03-27 02:32:02 - CreateAssessment GET loaded for teacher ID: 1
+2025-03-27 02:49:04 - Teacher Dashboard loaded for teacher ID: 1
+2025-03-27 02:49:07 - CreateAssessment GET loaded for teacher ID: 1
+2025-03-27 02:50:21 - New Assessment created with ID: 1 by teacher ID: 1
+2025-03-27 02:50:21 - AddQuestions GET loaded for Assessment ID: 1
+2025-03-27 02:50:47 - New question added to Assessment ID: 1
+2025-03-27 02:51:10 - New question added to Assessment ID: 1
+2025-03-27 02:57:45 - New question added to Assessment ID: 1
+2025-03-27 02:57:45 - Assessment finalized for Assessment ID: 1
+2025-03-27 02:57:45 - Teacher Dashboard loaded for teacher ID: 1
+2025-03-27 02:58:46 - Teacher Dashboard loaded for teacher ID: 1
+2025-03-27 02:58:58 - CreateAssessment GET loaded for teacher ID: 1
+2025-03-27 02:59:18 - New Assessment created with ID: 2 by teacher ID: 1
+2025-03-27 02:59:18 - AddQuestions GET loaded for Assessment ID: 2
+2025-03-27 03:02:02 - New question added to Assessment ID: 2
+2025-03-27 03:02:19 - New question added to Assessment ID: 2
+2025-03-27 03:02:31 - New question added to Assessment ID: 2
+2025-03-27 03:02:38 - New question added to Assessment ID: 2
+2025-03-27 03:02:38 - Assessment finalized for Assessment ID: 2
+2025-03-27 03:02:38 - Teacher Dashboard loaded for teacher ID: 1
+2025-03-27 03:05:38 - Teacher Dashboard loaded for teacher ID: 1
+2025-03-27 03:05:40 - CreateAssessment GET loaded for teacher ID: 1
+2025-03-27 03:05:53 - New Assessment created with ID: 3 by teacher ID: 1
+2025-03-27 03:05:53 - AddQuestions GET loaded for Assessment ID: 3
+2025-03-27 03:14:01 - Teacher Dashboard loaded for teacher ID: 1
+2025-03-27 03:14:09 - CreateAssessment GET loaded for teacher ID: 1
+2025-03-27 03:15:04 - New Assessment created with ID: 4 by teacher ID: 1
+2025-03-27 03:15:04 - AddQuestions GET loaded for Assessment ID: 4
+2025-03-27 03:15:49 - AddQuestions GET loaded for Assessment ID: 4
+2025-03-27 03:21:57 - Teacher Dashboard loaded for teacher ID: 1
+2025-03-27 03:22:00 - CreateAssessment GET loaded for teacher ID: 1
+2025-03-27 03:22:42 - New Assessment created with ID: 5 by teacher ID: 1
+2025-03-27 03:22:42 - AddQuestions GET loaded for Assessment ID: 5
+2025-03-27 03:23:55 - Teacher Dashboard loaded for teacher ID: 1

@@ -1,0 +1,55 @@
+﻿@* ========================= Views/Book/Preview.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.BookPreviewViewModel
+@{
+    ViewBag.Title = "Preview Listing";
+    var allImages = new List<Avonford_Secondary_School.Models.ViewModels.UploadedImageVM>();
+    if (Model.CoverImage != null) { allImages.Add(Model.CoverImage); }
+    if (Model.ExtraImages != null) { allImages.AddRange(Model.ExtraImages); }
+}
+<h2 class="mb-3">Preview Your Listing</h2>
+<p class="text-muted">Take a last look—if it sparkles, hit <strong>Confirm &amp; Submit</strong>. If not, jump back and tweak.</p>
+
+<div class="row" style="display:flex;gap:24px;flex-wrap:wrap">
+    <div style="flex:1;min-width:280px">
+        <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px">
+            @foreach (var img in allImages)
+            {
+                var b64 = Convert.ToBase64String(img.Bytes ?? new byte[0]);
+                <img src="data:@img.MimeType;base64,@b64" style="max-height:220px;border:1px solid #ddd;border-radius:6px;padding:4px" />
+            }
+        </div>
+        <div style="margin-top:10px;border:1px solid #eee;border-radius:6px;padding:10px">
+            <div><strong>Pickup Address:</strong> @Model.PickupAddress</div>
+            @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+            {
+                <div class="text-muted" style="font-size:12px">(@Model.Latitude, @Model.Longitude)</div>
+            }
+            <small class="text-muted">Map preview will display on the final public listing.</small>
+        </div>
+    </div>
+
+    <div style="flex:1.4;min-width:320px">
+        <h3 style="margin-top:0">@Model.Title</h3>
+        <p><strong>Author:</strong> @Model.Author</p>
+        @if (!string.IsNullOrWhiteSpace(Model.Edition))
+        {<p><strong>Edition:</strong> @Model.Edition</p>}
+        <p><strong>ISBN:</strong> @Model.ISBN</p>
+        <p><strong>Condition:</strong> @Model.Condition</p>
+        <p><strong>Price:</strong> R @Model.Price.ToString("0.00") @if (Model.IsNegotiable)
+        {<span class="label label-info" style="margin-left:6px">Negotiable</span>}</p>
+        <hr />
+        <div>
+            <strong>Description</strong>
+            <div style="border:1px solid #eee;border-radius:6px;padding:10px;margin-top:6px">@Html.Raw(Model.DescriptionHtmlSafe)</div>
+        </div>
+    </div>
+</div>
+
+<div class="text-right" style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end">
+    <a href="javascript:history.back()" class="btn btn-default">Back to Edit</a>
+    @using (Html.BeginForm("Confirm", "Book", FormMethod.Post, new { @id = "confirmForm" }))
+    {
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-success">Confirm &amp; Submit</button>
+    }
+</div>

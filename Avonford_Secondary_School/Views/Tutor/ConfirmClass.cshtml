@@ -1,0 +1,77 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorClassConfirmViewModel
+
+@{
+    ViewBag.Title = "Confirm Class Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="max-width:900px;">
+    <h2 class="text-center" style="color:#ff6600;">Confirm Class Details</h2>
+    <div class="row" style="margin-bottom:30px;">
+        <div class="col-md-3 text-center">
+            <img src="@( !string.IsNullOrEmpty(Model.CoverImageBase64)
+                        ? "data:image/jpeg;base64," + Model.CoverImageBase64
+                        : "https://via.placeholder.com/140x120")"
+                 style="width:140px; height:120px; border-radius:10px; object-fit:cover; border:2px solid #ff6600; margin-bottom:10px;" />
+            <br /><strong>@Model.ClassName</strong>
+        </div>
+        <div class="col-md-9">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Grade</th>
+                    <td>@Model.GradeName</td>
+                    <th>Subject</th>
+                    <td>@Model.SubjectName</td>
+                </tr>
+                <tr>
+                    <th>Mode</th>
+                    <td>@Model.Mode</td>
+                    <th>Location</th>
+                    <td>@Model.Location</td>
+                </tr>
+                <tr>
+                    <th>Capacity</th>
+                    <td>@Model.Capacity</td>
+                    <th>Annual Fee</th>
+                    <td>R @Model.AnnualFee.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <th>Deadline</th>
+                    <td>@Model.EnrollmentDeadline?.ToString("yyyy-MM-dd")</td>
+                    <th>WhatsApp</th>
+                    <td>@Model.WhatsAppContact</td>
+                </tr>
+                <tr>
+                    <th>Entry Req.</th>
+                    <td>@Model.EntryRequirements</td>
+                    <th>Schedule</th>
+                    <td>@Model.ScheduleTemplate</td>
+                </tr>
+                <tr>
+                    <th>Resources</th>
+                    <td colspan="3">
+                        @if (Model.ResourceNames != null && Model.ResourceNames.Any())
+                        {
+                            <ul>
+                                @foreach (var f in Model.ResourceNames)
+                                {
+                                    <li>@f</li>
+}
+                            </ul>
+                        }
+                        else
+                        { <span class="text-muted">None</span>}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td colspan="3">@Model.ClassDescription</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="text-center" style="margin-bottom:30px;">
+        <a href="@Url.Action("MyClasses", "Tutor")" class="btn btn-default btn-lg"><i class="fa fa-list"></i> My Classes</a>
+        <a href="@Url.Action("CreateClass", "Tutor")" class="btn btn-warning btn-lg"><i class="fa fa-edit"></i> Edit</a>
+    </div>
+</div>

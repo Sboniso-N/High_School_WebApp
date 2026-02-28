@@ -1,0 +1,53 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorSessionListViewModel
+@{
+    ViewBag.Title = "Manage Sessions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <h2>Sessions for @Model.ClassName (@Model.GradeName, @Model.SubjectName)</h2>
+    <a href="@Url.Action("ScheduleSession", "Tutor", new { classId = Model.TutorClassID })" class="btn btn-primary" style="margin-bottom:22px;">
+        <i class="fa fa-plus"></i> Schedule New Tutoring Session
+    </a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date & Time</th>
+                <th>Mode</th>
+                <th>Location/Link</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model.Sessions)
+            {
+                <tr>
+                    <td>@s.Title</td>
+                    <td>@s.DisplayTime</td>
+                    <td>@s.Mode</td>
+                    <td>
+                        @if (s.Mode == "Online")
+                        {
+                            <a href="@s.OnlineMeetingLink" target="_blank">@s.OnlineMeetingLink</a>
+                        }
+                        else
+                        { @s.Location}
+                    </td>
+                    <td>
+                        <a href="@Url.Action("SessionDetails", "Tutor", new { id = s.TutorSessionID })" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> View</a>
+                        @if (!s.IsCancelled)
+                        {
+                            <form method="post" action="@Url.Action("CancelSession", "Tutor")" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@s.TutorSessionID" />
+                                <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Cancel this session?');">
+                                    <i class="fa fa-ban"></i> Cancel
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

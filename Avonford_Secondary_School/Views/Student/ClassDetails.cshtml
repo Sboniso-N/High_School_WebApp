@@ -1,0 +1,105 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.StudentClassDetailVM
+@{
+    ViewBag.Title = "Class Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isPaid = Model.CanExit;
+}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-4">
+            <img src="@(Model.CoverImageBase64 != null ? "data:image/jpeg;base64," + Model.CoverImageBase64 : "/Content/img/no-class-image.png")"
+                 class="img-fluid rounded shadow mb-3" style="width:100%;object-fit:cover;">
+            <div class="mb-2">
+                <span class="badge bg-primary">@Model.SubjectName</span>
+                <span class="badge bg-secondary">@Model.GradeName</span>
+                <span class="badge bg-info text-dark">@Model.Mode</span>
+            </div>
+            <p>
+                <span class="badge bg-success">Fee: R @Model.AnnualFee.ToString("F2")</span>
+                <span class="badge bg-warning">Slots Left: @(Model.Capacity - Model.Enrolled)</span>
+            </p>
+            <hr />
+            <div>
+                <h6>Tutor</h6>
+                <div class="d-flex align-items-center mb-2">
+                    <img src="@(Model.TutorProfilePic != null ? "data:image/jpeg;base64," + Model.TutorProfilePic : "/Content/img/no-profile.png")"
+                         class="rounded-circle" style="width:44px;height:44px;object-fit:cover;margin-right:10px;">
+                    <span>@Model.TutorName</span>
+                </div>
+                <a href="@Url.Action("ViewTutor", "Student", new { tutorId = Model.TutorID })" class="btn btn-outline-primary btn-sm">View Tutor Info</a>
+            </div>
+
+            <div class="col-md-8">
+                <h2>@Model.ClassName</h2>
+                <p>@Model.Description</p>
+                <ul class="list-group mb-3">
+                    <li class="list-group-item"><b>Schedule:</b> @Model.ScheduleTemplate</li>
+                    <li class="list-group-item"><b>Location:</b> @Model.Location</li>
+                    <li class="list-group-item"><b>Contact:</b> @Model.WhatsAppContact</li>
+                    <li class="list-group-item"><b>Entry Requirements:</b> @Model.EntryRequirements</li>
+                    <li class="list-group-item"><b>Enrollment Deadline:</b> @(Model.EnrollmentDeadline?.ToString("yyyy-MM-dd") ?? "N/A")</li>
+                </ul>
+                <div id="paidSections" style="display:@(isPaid ? "block" : "none")">
+                    <h5>Resources</h5>
+                    <ul class="list-group mb-3">
+                        @if (Model.ResourceFiles != null && Model.ResourceFiles.Any())
+                        {
+                            foreach (var file in Model.ResourceFiles)
+                            {
+                                var parts = file.Split('|');
+                                var fileName = parts[0];
+                                var resourceId = parts[1];
+                                <li class="list-group-item">
+                                    <a href="@Url.Action("ViewResource", "Student", new { resourceId = resourceId })" target="_blank">
+                                        <i class="fa fa-file-pdf-o text-danger"></i> @fileName
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item">No resources uploaded yet.</li>
+                        }
+                    </ul>
+                    <h5>Upcoming Sessions</h5>
+                    <ul class="list-group mb-3">
+                        @if (Model.UpcomingSessions != null && Model.UpcomingSessions.Any())
+                        {
+                            foreach (var session in Model.UpcomingSessions)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @session.DisplayString
+                                    <a href="@Url.Action("SessionDetail", "Student", new { sessionId = session.SessionID })"
+                                       class="btn btn-outline-primary btn-sm ms-3">
+                                        View Session Details
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="list-group-item">No sessions scheduled yet.</li>
+                        }
+                    </ul>
+                    <a href="@Url.Action("ExitClass", "Student", new { enrollmentId = ViewBag.EnrollmentID ?? 0 })" class="btn btn-danger mb-2" id="exitBtn">Exit Class</a>
+                </div>
+                <div id="unpaidSections" style="display:@(isPaid ? "none" : "block")">
+                    <a href="@Url.Action("PayForClass", "Student", new { classId = Model.TutorClassID })" class="btn btn-success btn-lg mb-2">Pay & Join Class</a>
+                </div>
+            </div>
+        </div>
+</div>
+@section Scripts{
+    <script>
+        var isPaid = '@isPaid'.toLowerCase() === 'true';
+        $(function () {
+            if (isPaid) {
+                $("#paidSections").show();
+                $("#unpaidSections").hide();
+            } else {
+                $("#paidSections").hide();
+                $("#unpaidSections").show();
+            }
+        });
+    </script>
+}

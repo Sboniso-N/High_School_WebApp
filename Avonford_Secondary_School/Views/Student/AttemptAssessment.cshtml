@@ -1,0 +1,187 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.AssessmentAttemptViewModel
+
+@{
+    ViewBag.Title = "Assessment Attempt";
+    Layout = null; // You can switch to "~/Views/Shared/_Layout.cshtml" if your layout already has styles/scripts
+    DateTime targetEnd = Model.TimerEnd;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+            .navbar-custom .navbar-brand {
+                color: #fff !important;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .navbar-custom .navbar-nav > li > a {
+                color: #fff !important;
+                font-size: 16px;
+            }
+
+                .navbar-custom .navbar-nav > li > a:hover {
+                    color: #222 !important;
+                }
+
+        .container {
+            padding: 30px 20px;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .panel {
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .panel-heading {
+            background-color: #222;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .panel-body label {
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: #ff6600;
+            border-color: #ff6600;
+        }
+
+            .btn-primary:hover {
+                background-color: #e65c00;
+                border-color: #e65c00;
+            }
+
+        #timer {
+            font-size: 20px;
+            color: red;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Student/Index">Avonford Secondary School</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Student/Index">Dashboard</a></li>
+                <li><a href="/Account/Logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>@Model.AssessmentName - Assessment Attempt</h2>
+
+        @using (Html.BeginForm("SubmitAttempt", "Student", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.AttemptID)
+
+            for (int i = 0; i < Model.Questions.Count; i++)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>Question @(i + 1):</strong> @Model.Questions[i].QuestionText
+                    </div>
+                    <div class="panel-body">
+                        @if (Model.Questions[i].QuestionType == "MCQ")
+                        {
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="Responses[@i].StudentAnswer" value="A" /> A. @Model.Questions[i].OptionA
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="Responses[@i].StudentAnswer" value="B" /> B. @Model.Questions[i].OptionB
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="Responses[@i].StudentAnswer" value="C" /> C. @Model.Questions[i].OptionC
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="Responses[@i].StudentAnswer" value="D" /> D. @Model.Questions[i].OptionD
+                                </label>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-group">
+                                <label>Answer:</label>
+                                <input type="text" name="Responses[@i].StudentAnswer" class="form-control" />
+                            </div>
+                        }
+                        <!-- Hidden fields -->
+                        <input type="hidden" name="Responses[@i].QuestionID" value="@Model.Questions[i].QuestionID" />
+                        <input type="hidden" name="Responses[@i].QuestionType" value="@Model.Questions[i].QuestionType" />
+                    </div>
+                </div>
+            }
+
+            <input type="submit" value="Submit Assessment" class="btn btn-primary" />
+        }
+
+        <div id="timer"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var targetTime = new Date('@targetEnd.ToString("o")');
+
+            function updateTimer() {
+                var now = new Date();
+                var diff = targetTime - now;
+
+                if (diff <= 0) {
+                    $("#timer").html("Time's up!");
+                    $("form").submit(); // Auto-submit
+                } else {
+                    var seconds = Math.floor((diff / 1000) % 60);
+                    var minutes = Math.floor((diff / 1000 / 60) % 60);
+                    var hours = Math.floor((diff / (1000 * 60 * 60)));
+                    $("#timer").html("⏳ Time Remaining: " + hours + "h " + minutes + "m " + seconds + "s");
+                }
+            }
+
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        });
+    </script>
+</body>
+</html>

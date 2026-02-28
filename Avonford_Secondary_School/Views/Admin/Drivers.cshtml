@@ -1,0 +1,170 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.DriverListFilterVM
+@{
+    ViewBag.Title = "Drivers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .status-pill { cursor:pointer; }
+    .driver-card { transition: transform .15s ease, box-shadow .15s ease; }
+    .driver-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    .cap-bar { height: 8px; border-radius: 8px; background:#e9ecef; overflow:hidden; }
+    .cap-fill { height: 8px; border-radius: 8px; transition: width .4s ease; }
+    .flip-in { animation: flipIn .4s ease; }
+    @@keyframes flipIn { from { transform: rotateX(-90deg); opacity:0; } to { transform: none; opacity:1; } }
+    .photo { width:56px;height:56px;border-radius:50%;object-fit:cover; background:#f1f3f5; }
+    .badge-dot { display:inline-flex;align-items:center;gap:.4rem; }
+    .badge-dot::before { content:""; width:.5rem;height:.5rem;border-radius:50%; display:inline-block; }
+    .bd-green::before{ background:#28a745;}
+    .bd-yellow::before{ background:#ffc107;}
+    .bd-gray::before{ background:#6c757d;}
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Drivers</h2>
+    <div>
+        <a class="btn btn-primary" href="@Url.Action("CreateDriver","Admin")"><i class="glyphicon glyphicon-plus"></i> Add Driver</a>
+        <a class="btn btn-default" id="btnRefresh"><span class="glyphicon glyphicon-refresh"></span> Refresh</a>
+    </div>
+</div>
+
+<div class="row text-center mb-4">
+    <div class="col-sm-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="h4 mb-0" id="countTotal" data-target="@Model.Total">0</div>
+                <div class="text-muted">Total</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="h4 mb-0" id="countAvail" data-target="@Model.AvailableCount">0</div>
+                <div class="text-muted">Available</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="h4 mb-0" id="countOn" data-target="@Model.OnDeliveryCount">0</div>
+                <div class="text-muted">On Delivery</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="h4 mb-0" id="countOff" data-target="@Model.OfflineCount">0</div>
+                <div class="text-muted">Offline</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-6">
+        <input id="txtSearch" type="text" class="form-control" placeholder="Search by name, phone or email…">
+    </div>
+    <div class="col-sm-6 text-right">
+        <div class="btn-group">
+            <a class="btn btn-default status-pill" data-status="">All</a>
+            <a class="btn btn-default status-pill" data-status="Available">🟢 Available</a>
+            <a class="btn btn-default status-pill" data-status="OnDelivery">🟡 On Delivery</a>
+            <a class="btn btn-default status-pill" data-status="Offline">⚪ Offline</a>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="gridDrivers">
+@foreach (var d in Model.Drivers)
+{
+    var pct = d.MaxDailyDeliveries > 0 ? (int)Math.Round((double)(d.MaxDailyDeliveries - d.DeliveriesToday) / d.MaxDailyDeliveries * 100) : 0;
+    var dotClass = d.Status == "Available" ? "bd-green" : d.Status == "OnDelivery" ? "bd-yellow" : "bd-gray";
+    <div class="col-md-4 driver-item" data-name="@((d.Name ?? "").ToLower())" data-status="@d.Status">
+        <div class="panel panel-default driver-card flip-in">
+            <div class="panel-body">
+                <div class="media">
+                    <div class="media-left">
+                        <img class="photo" src="@(d.PhotoBase64 != null ? ("data:image/*;base64," + d.PhotoBase64) : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=")" />
+                    </div>
+                    <div class="media-body">
+                        <div class="h4 m-t-0 m-b-5">@d.Name</div>
+                        <div class="text-muted small">@d.VehicleType · @d.Phone</div>
+                        <div class="badge-dot @dotClass small m-t-5">@d.Status</div>
+                    </div>
+                </div>
+
+                <div class="m-t-10">
+                    <div class="small text-muted">Capacity left today (@(d.MaxDailyDeliveries - d.DeliveriesToday) / @d.MaxDailyDeliveries)</div>
+                    <div class="cap-bar"><div class="cap-fill" style="width:@pct%; background:@(pct>50?"#28a745":pct>0?"#ffc107":"#dc3545");"></div></div>
+                </div>
+
+                <div class="text-right m-t-10">
+                    <a class="btn btn-xs btn-default" href="@Url.Action("EditDriver","Admin", new { id = d.DriverID })"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+                    @using (Html.BeginForm("DeleteDriver","Admin", FormMethod.Post, new { onsubmit="return confirm('Delete this driver?');"}))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id", d.DriverID)
+                        <button class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+</div>
+
+@section scripts{
+<script>
+    // animated counters
+    function countUp(el){
+        var target = parseInt(el.getAttribute('data-target')||'0',10);
+        var n=0, step = Math.max(1, Math.round(target/30));
+        var t = setInterval(function(){
+            n += step;
+            if(n >= target){ n = target; clearInterval(t); }
+            el.textContent = n.toLocaleString();
+        }, 20);
+    }
+    ['countTotal','countAvail','countOn','countOff'].forEach(id => {
+        var el = document.getElementById(id); if(el) countUp(el);
+    });
+
+    // local live filtering
+    var $grid = $('#gridDrivers');
+    $('#txtSearch').on('input', function(){
+        var q = $(this).val().toLowerCase();
+        $grid.find('.driver-item').each(function(){
+            var name = $(this).data('name');
+            $(this).toggle(name.indexOf(q) !== -1);
+        });
+    });
+    $('.status-pill').on('click', function(){
+        var s = $(this).data('status') + '';
+        $('.status-pill').removeClass('btn-primary').addClass('btn-default');
+        $(this).removeClass('btn-default').addClass('btn-primary');
+        $grid.find('.driver-item').each(function(){
+            var me = $(this);
+            if(!s) { me.show(); return; }
+            me.toggle(me.data('status') === s);
+        });
+    });
+
+    // silly little refresh spinner
+    $('#btnRefresh').on('click', function(){
+        var btn = $(this); btn.addClass('disabled');
+        btn.find('.glyphicon-refresh').addClass('glyphicon-refresh-animate');
+        // go to server (full GET) to keep it simple
+        window.location = '@Url.Action("Drivers","Admin")';
+    });
+</script>
+<style>
+    .glyphicon-refresh-animate {
+        -animation: spin .7s infinite linear;
+        -webkit-animation: spin .7s infinite linear;
+    }
+    @@-webkit-keyframes spin { from { -webkit-transform: rotate(0deg);} to { -webkit-transform: rotate(360deg);} }
+    @@keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+</style>
+}

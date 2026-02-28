@@ -1,0 +1,105 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.StudentTransferStatusDetailVM
+@{
+    ViewBag.Title = "Track Transfer Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var steps = new[]{
+        "Submitted",
+        "PendingTeacher",
+        "TeacherApproved",
+        "TeacherRejected",
+        "PendingAdmin",
+        "AdminApproved",
+        "AdminRejected",
+        "Cancelled"
+    };
+}
+<!-- Custom Progressbar CSS directly in view -->
+<style>
+    .progressbar {
+        counter-reset: step;
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin-bottom: 30px;
+    }
+
+        .progressbar li {
+            flex: 1;
+            position: relative;
+            text-align: center;
+            color: #aaa;
+        }
+
+            .progressbar li.active {
+                color: #28a745;
+                font-weight: bold;
+            }
+
+            .progressbar li::before {
+                content: counter(step);
+                counter-increment: step;
+                width: 30px;
+                height: 30px;
+                border: 2px solid #aaa;
+                display: block;
+                margin: 0 auto 5px auto;
+                border-radius: 50%;
+                background: #fff;
+                line-height: 30px;
+            }
+
+            .progressbar li.active::before {
+                border-color: #28a745;
+                background: #28a745;
+                color: #fff;
+            }
+
+            .progressbar li:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 2px;
+                background: #aaa;
+                top: 15px;
+                left: 50%;
+                z-index: -1;
+            }
+
+            .progressbar li.active:not(:last-child)::after {
+                background: #28a745;
+            }
+</style>
+
+<div class="container mt-4">
+    <h2 class="mb-3 text-primary">Track Your Transfer Request</h2>
+    <div class="mb-3">
+        <b>From:</b> @Model.OldGrade (@Model.OldStream) <b>To:</b> @Model.NewGrade (@Model.NewStream)
+        <br />
+        <b>Justification:</b> @Model.Justification
+        <br />
+        <b>Date Submitted:</b> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+    </div>
+    <div class="progress-tracker mb-4">
+        <ul class="progressbar">
+            @foreach (var step in steps)
+            {
+                var isActive = step == Model.Status || Model.AuditTrail.Any(a => a.Action == step);
+                <li class="@(isActive ? "active" : "")">@step</li>
+            }
+        </ul>
+    </div>
+    <h5>Status History</h5>
+    <ul class="list-group mb-3">
+        @foreach (var log in Model.AuditTrail)
+        {
+            <li class="list-group-item">
+                <b>@log.Action</b> on @log.ActionDate.ToString("yyyy-MM-dd HH:mm")
+                @if (!string.IsNullOrWhiteSpace(log.Comment))
+                {
+                    <div class="text-muted small">"@log.Comment"</div>
+                }
+            </li>
+        }
+    </ul>
+    <a href="@Url.Action("MyTransferRequests", "Student")" class="btn btn-outline-secondary">Back to My Requests</a>
+</div>

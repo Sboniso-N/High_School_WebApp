@@ -1,0 +1,81 @@
+﻿@* ========================= Views/Book/BorrowInvoice.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.BorrowVMs.BorrowInvoiceVM
+@{
+    ViewBag.Title = "Invoice — " + Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .wrap{margin-top:16px}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.06);padding:18px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+    @@media (max-width:992px){.grid{grid-template-columns:1fr}}
+    .line{display:flex;justify-content:space-between;margin:6px 0}
+    .total{font-size:20px;font-weight:700}
+    .muted{color:#64748b}
+    .btn-accent{background:#ff6600;color:#fff;border:none}
+    .btn-accent:hover{background:#e65c00;color:#fff}
+    .btn-ghost{background:#f8fafc;border:1px solid #e2e8f0}
+</style>
+
+<div class="container wrap">
+    <h3 style="margin-top:4px">Invoice ready: <span class="muted">@Model.Title</span></h3>
+
+    <div class="grid">
+        <div class="card">
+            <div class="line"><div>Usage days</div><div>@Model.UsageDays</div></div>
+            <div class="line"><div>Late days</div><div>@Model.LateDays</div></div>
+            <div class="line"><div>Borrow fee</div><div>R @Model.BorrowFeeFinal.ToString("0.00")</div></div>
+            <div class="line"><div>Late fee</div><div>R @Model.LateFeeFinal.ToString("0.00")</div></div>
+            @if (Model.DamageFee > 0)
+            {
+                <div class="line"><div>Damage fee</div><div>R @Model.DamageFee.ToString("0.00")</div></div>
+            }
+            <hr />
+            <div class="line total"><div>Total due</div><div>R @Model.TotalDue.ToString("0.00")</div></div>
+
+            <div class="muted" style="margin-top:10px">
+                Payment methods: wallet credit or card (Stripe). Once paid, this borrow will be closed and the lender will be credited.
+            </div>
+        </div>
+
+        <div class="card">
+            <h4 style="margin-top:0">Pay now</h4>
+
+            @* Wallet *@
+            @using (Html.BeginForm("BorrowPayWallet", "Book", new { reservationId = Model.ReservationID }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                if (Model.BuyerHasEnoughWallet)
+                {
+                    <button type="submit" class="btn btn-accent btn-block" style="width:100%;margin-bottom:8px">
+                        <span class="glyphicon glyphicon-ok"></span> Pay with Wallet
+                    </button>
+                }
+                else
+                {
+                    <button type="button" disabled class="btn btn-accent btn-block" style="width:100%;margin-bottom:8px;opacity:.7" title="Not enough wallet balance">
+                        Pay with Wallet (insufficient)
+                    </button>
+                    <a class="btn btn-ghost btn-block" style="width:100%;margin-bottom:8px" href="@Url.Action("Wallet","Book")">
+                        Top up wallet
+                    </a>
+                }
+            }
+
+            @* Card *@
+            <a class="btn btn-primary btn-block" style="width:100%;margin-bottom:8px"
+               href="@Url.Action("StartBorrowCardPayment","Book", new { reservationId = Model.ReservationID })">
+                <span class="glyphicon glyphicon-credit-card"></span> Pay with Card
+            </a>
+
+            <a class="btn btn-default btn-block" style="width:100%" href="@Url.Action("BorrowDetails","Book", new { id = Model.ReservationID })">
+                Back to reservation
+            </a>
+
+            <hr />
+            <small class="muted">
+                Tip: You can switch methods any time before paying. Card payments are processed by Stripe.
+            </small>
+        </div>
+    </div>
+</div>

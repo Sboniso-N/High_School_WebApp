@@ -1,0 +1,121 @@
+﻿@* Views/Book/BorrowDetails.cshtml *@
+@model Avonford_Secondary_School.Models.ViewModels.BorrowVMs.BorrowDetailVM
+@{
+    ViewBag.Title = "Reservation #" + Model.ReservationID;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var canReturn =
+        string.Equals(Model.Status, "Active", StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(Model.Status, "Reserved", StringComparison.OrdinalIgnoreCase);
+}
+<style>
+    .panelish {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.05)
+    }
+
+    .kv {
+        margin: 6px 0
+    }
+
+    .badge {
+        border-radius: 999px;
+        padding: 4px 10px
+    }
+
+    .status-Reserved {
+        background: #e0f2fe;
+        color: #075985
+    }
+
+    .status-Active {
+        background: #ecfccb;
+        color: #3f6212
+    }
+
+    .status-ReturnedPendingApproval {
+        background: #fef9c3;
+        color: #854d0e
+    }
+
+    .status-AwaitingPayment {
+        background: #ede9fe;
+        color: #5b21b6
+    }
+
+    .status-Closed {
+        background: #f1f5f9;
+        color: #334155
+    }
+</style>
+
+<div class="container" style="margin-top:15px">
+    <div class="panelish">
+        <h3 style="margin-top:0">Reservation #@Model.ReservationID</h3>
+
+        <div class="kv"><b>Book:</b> @Model.Title</div>
+        <div class="kv">
+            <b>Status:</b>
+            <span class="badge status-@Model.Status.Replace(" ", "")">@Model.Status</span>
+        </div>
+
+        <div class="kv"><b>Fee/day:</b> R @((Model.FeePerDay ?? 0m).ToString("0.00"))</div>
+        <div class="kv"><b>Start:</b> @Model.StartDate</div>
+        <div class="kv"><b>End (Due):</b> @Model.EndDate</div>
+        <div class="kv"><b>Planned total:</b> R @((Model.PlannedBorrowFee ?? 0m).ToString("0.00"))</div>
+
+        <hr />
+        <div class="text-muted">Created @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</div>
+
+        @* Action row *@
+        <div class="clearfix" style="margin-top:16px">
+            <div class="pull-left">
+                @if (canReturn)
+                {
+                    <div class="text-muted" style="margin-bottom:8px">
+                        You can return early. Final fees are based on days used (3%/day). Late returns add 5%/day after the due date.
+                    </div>
+                }
+                else if (string.Equals(Model.Status, "ReturnedPendingApproval", StringComparison.OrdinalIgnoreCase))
+                {
+                    <div class="text-muted" style="margin-bottom:8px">
+                        Your return was submitted. An admin will review photos/condition and finalize the invoice.
+                    </div>
+                }
+                else if (string.Equals(Model.Status, "AwaitingPayment", StringComparison.OrdinalIgnoreCase))
+                {
+                    <div class="text-muted" style="margin-bottom:8px">
+                        Your invoice is ready. Please complete payment to close this borrow.
+                    </div>
+                }
+            </div>
+
+            <div class="pull-right">
+                <a class="btn btn-default" href="@Url.Action("MyBorrowings","Book")">Back to My Borrowings</a>
+
+                @* Enable early return: show for Active OR Reserved *@
+                @if (canReturn)
+                {
+                    <a class="btn btn-warning"
+                       href="@Url.Action("BorrowReturn","Book", new { reservationId = Model.ReservationID })"
+                       style="margin-left:6px">
+                        Return Book
+                    </a>
+                }
+
+                @* If the admin approved and invoice is ready, show Pay button *@
+                @if (string.Equals(Model.Status, "AwaitingPayment", StringComparison.OrdinalIgnoreCase))
+                {
+                    <a class="btn btn-primary"
+                       href="@Url.Action("BorrowInvoice","Book", new { reservationId = Model.ReservationID })"
+                       style="margin-left:6px">
+                        Pay Invoice
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

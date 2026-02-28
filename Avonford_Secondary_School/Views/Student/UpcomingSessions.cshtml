@@ -1,0 +1,74 @@
+﻿@model List<Avonford_Secondary_School.Models.ViewModels.UpcomingSessionVM>
+@{
+    ViewBag.Title = "Upcoming Sessions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-3">
+    <h2>Upcoming Sessions</h2>
+    <input type="text" class="form-control mb-3" id="sessionSearch" placeholder="Search by subject, class, or tutor..." />
+    <div id="sessionsList">
+        @foreach (var s in Model)
+        {
+            <div class="card mb-3 session-card">
+                <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                    <div>
+                        <h5>@s.ClassName</h5>
+                        <div>
+                            <span class="badge bg-primary">@s.Subject</span>
+                            <span class="badge bg-info text-dark">@s.Mode</span>
+                        </div>
+                        <div>
+                            <b>Tutor:</b> @s.TutorName
+                        </div>
+                        <div>
+                            <b>Date:</b> @s.SessionDate.ToString("yyyy-MM-dd") @s.StartTime.ToString(@"hh\:mm")-@s.EndTime.ToString(@"hh\:mm")
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column mt-3 mt-md-0">
+                        <a href="@Url.Action("SessionDetail", "Student", new { sessionId = s.SessionId })" class="btn btn-outline-primary mb-1">View Details</a>
+                        @if (s.CanJoin)
+                        {
+                            <a href="@s.OnlineMeetingLink" class="btn btn-success mb-1" target="_blank">Join Session</a>
+                        }
+                        @if (s.CanViewDirections)
+                        {
+                            <button class="btn btn-warning mb-1" onclick="showDirections('@s.Location')">View Directions</button>
+                        }
+                        @if (s.CanConfirmAttendance && !s.HasAttended)
+                        {
+                            <a href="@Url.Action("GenerateAttendanceQRCode", "Student", new { sessionId = s.SessionId })" class="btn btn-info mb-1">Confirm Attendance (QR)</a>
+                        }
+                        @if (s.HasAttended)
+                        {
+                            <span class="badge bg-success">Attended</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $("#sessionSearch").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $(".session-card").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+        window.showDirections = function(address) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(pos) {
+                    var url = "https://www.google.com/maps/dir/?api=1"
+                        + "&origin=" + pos.coords.latitude + "," + pos.coords.longitude
+                        + "&destination=" + encodeURIComponent(address)
+                        + "&travelmode=driving";
+                    window.open(url, "_blank");
+                });
+            } else {
+                alert("Geolocation is not supported.");
+            }
+        }
+    </script>
+}

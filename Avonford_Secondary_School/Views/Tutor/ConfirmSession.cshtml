@@ -1,0 +1,21 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorSessionViewModel
+@{
+    ViewBag.Title = "Session Scheduled";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container mt-5">
+    <div class="alert alert-success">
+        <h3>Session Scheduled!</h3>
+        <p>
+            Your session "<b>@Model.Title</b>" for <b>@Model.SessionDate.ToString("yyyy-MM-dd")</b>
+            from <b>@Model.StartTime.ToString(@"hh\:mm")</b> to <b>@Model.EndTime.ToString(@"hh\:mm")</b> was successfully created.
+        </p>
+        <hr />
+        <a href="@Url.Action("SessionDetails", "Tutor", new { id = Model.TutorSessionID })" class="btn btn-info">
+            View Session Details
+        </a>
+        <a href="@Url.Action("ManageSessions", "Tutor", new { classId = Model.TutorClassID })" class="btn btn-secondary">
+            Back to Sessions
+        </a>
+    </div>
+</div>

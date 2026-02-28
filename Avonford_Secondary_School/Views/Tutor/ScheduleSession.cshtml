@@ -1,0 +1,115 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorSessionCreateViewModel
+@{
+    ViewBag.Title = "Schedule Tutoring Session";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <h2>Schedule Session for @Model.ClassName</h2>
+    @using (Html.BeginForm("ScheduleSession", "Tutor", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.TutorClassID)
+        @Html.HiddenFor(m => m.Mode, new { id = "sessionModeHidden", Value = Model.Mode ?? "Physical" })
+
+        <div class="form-group">
+            <label>Title</label>
+            @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 3 })
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label>Date</label>
+                @Html.TextBoxFor(m => m.SessionDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+            </div>
+            <div class="col-md-4">
+                <label>Start Time</label>
+                @Html.TextBoxFor(m => m.StartTime, "{0:hh\\:mm}", new { @class = "form-control", type = "time" })
+            </div>
+            <div class="col-md-4">
+                <label>End Time</label>
+                @Html.TextBoxFor(m => m.EndTime, "{0:hh\\:mm}", new { @class = "form-control", type = "time" })
+            </div>
+        </div>
+        <div id="sessionModeSection" class="form-group" style="margin-top:20px;">
+            @if (Model.Mode == "Blended")
+            {
+                <label>Session Type</label>
+                <select id="blendedMode" class="form-control">
+                    <option value="">Choose session mode...</option>
+                    <option value="Online">Online</option>
+                    <option value="Physical">Physical</option>
+                </select>
+            }
+        </div>
+        <div id="onlineFields" class="form-group" style="display:@((Model.Mode=="Online" || (Model.Mode=="Blended" && Model.OnlineMeetingLink != null)) ? "block" : "none");margin-top:10px;">
+            <label>Online Meeting Link</label>
+            @Html.TextBoxFor(m => m.OnlineMeetingLink, new { @class = "form-control", placeholder = "e.g. Zoom/Teams/Meet link" })
+        </div>
+        <div id="physicalFields" class="form-group" style="display:@((Model.Mode=="Physical" || (Model.Mode=="Blended" && Model.Location != null)) ? "block" : "none");margin-top:10px;">
+            <label>Physical Location</label>
+            @Html.TextBoxFor(m => m.Location, new { @class = "form-control", placeholder = "Type any address or use suggestions (optional)", id = "locationInput", autocomplete = "off" })
+            <small class="form-text text-muted">
+                <b>Tip:</b> You can type any address, paste, edit, or select from suggestions if shown. There is no restriction—you are free to enter any text here.
+            </small>
+        </div>
+        <div class="form-group">
+            <label>Session Instructions</label>
+            @Html.TextAreaFor(m => m.Instructions, new { @class = "form-control", rows = 2 })
+        </div>
+        <div class="form-group">
+            <label>Upload Supporting Materials (optional, PDF only)</label>
+            <input type="file" name="SessionResources" multiple accept=".pdf" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Schedule Session</button>
+    }
+</div>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- GOOGLE PLACES API AUTOCOMPLETE -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjAOTlvfmvmY2SGZSdR54_3LNda2B4xp0&libraries=places"></script>
+    <script>
+        var mode = '@Model.Mode';
+
+        function toggleFields(selectedMode) {
+            $("#sessionModeHidden").val(selectedMode);
+            if(selectedMode == "Online") {
+                $("#onlineFields").show();
+                $("#physicalFields").hide();
+            } else if(selectedMode == "Physical") {
+                $("#physicalFields").show();
+                $("#onlineFields").hide();
+            } else {
+                $("#onlineFields").hide();
+                $("#physicalFields").hide();
+            }
+        }
+
+        $(function () {
+            if(mode === "Blended") {
+                $("#sessionModeSection").show();
+                $("#sessionModeHidden").val('');
+                $("#blendedMode").on("change", function () {
+                    var val = $(this).val();
+                    $("#sessionModeHidden").val(val);
+                    toggleFields(val);
+                });
+            } else {
+                $("#sessionModeHidden").val(mode || 'Physical');
+                toggleFields(mode || 'Physical');
+            }
+        });
+
+        // Initialize Google Places Autocomplete
+        $(document).ready(function () {
+            if (typeof google !== "undefined" && google.maps && google.maps.places) {
+                var input = document.getElementById('locationInput');
+                if(input) {
+                    var autocomplete = new google.maps.places.Autocomplete(input);
+                }
+            }
+        });
+    </script>
+}

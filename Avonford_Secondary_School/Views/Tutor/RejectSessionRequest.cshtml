@@ -1,0 +1,34 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorRejectSessionRequestVM
+@{
+    ViewBag.Title = "Reject Private Session Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4" style="max-width:600px;">
+    <div class="card shadow">
+        <div class="card-body">
+            <h3>Reject Private Session Request</h3>
+            <dl class="row">
+                <dt class="col-md-4">Student:</dt>
+                <dd class="col-md-8">@Model.StudentName</dd>
+                <dt class="col-md-4">Subject:</dt>
+                <dd class="col-md-8">@Model.SubjectName</dd>
+                <dt class="col-md-4">Time:</dt>
+                <dd class="col-md-8">@Model.StartTime.ToString("yyyy-MM-dd HH:mm") to @Model.EndTime.ToString("yyyy-MM-dd HH:mm")</dd>
+                <dt class="col-md-4">Topic:</dt>
+                <dd class="col-md-8">@Model.TopicMessage</dd>
+            </dl>
+            @using (Html.BeginForm("RejectSessionRequest", "Tutor", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.RequestID)
+                <div class="mb-3">
+                    <label for="RejectReason" class="form-label">Reason for rejection:</label>
+                    @Html.TextAreaFor(m => m.RejectReason, new { @class = "form-control", rows = 3 })
+                    @Html.ValidationMessageFor(m => m.RejectReason, "", new { @class = "text-danger" })
+                </div>
+                <button type="submit" class="btn btn-danger">Reject Session</button>
+                <a href="@Url.Action("PrivateSessionRequests", "Tutor")" class="btn btn-secondary ms-2">Cancel</a>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,132 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.UpcomingSessionVM
+@{
+    ViewBag.Title = "Session Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h2 class="mb-2">@Model.ClassName</h2>
+            <div>
+                <span class="badge bg-primary">@Model.Subject</span>
+                <span class="badge bg-secondary">@Model.Mode</span>
+                <span class="badge bg-success">@Model.SessionDate.ToString("yyyy-MM-dd")</span>
+                <span class="badge bg-info text-dark">@Model.StartTime.ToString(@"hh\:mm") - @Model.EndTime.ToString(@"hh\:mm")</span>
+            </div>
+            <hr />
+            <h5>Tutor: @Model.TutorName</h5>
+            @if (Model.Mode == "Online")
+            {
+                <div class="alert alert-info mt-3">
+                    <b>Online Meeting Link:</b>
+                    <br />
+                    <a href="@Model.OnlineMeetingLink" class="btn btn-success mt-1" target="_blank">
+                        <i class="fa fa-video-camera"></i> Join Session
+                    </a>
+                </div>
+            }
+            else if (Model.Mode == "Physical")
+            {
+                <div class="mb-3">
+                    <b>Venue:</b> @Model.Location
+                </div>
+                <div class="mb-2">
+                    <button class="btn btn-outline-primary mb-2" onclick="showRouteMap()">
+                        <i class="fa fa-map"></i> View Directions
+                    </button>
+                    @if (Model.CanConfirmAttendance && !Model.HasAttended)
+                    {
+                        <a href="@Url.Action("GenerateAttendanceQRCode", "Student", new { sessionId = Model.SessionId })"
+                           class="btn btn-outline-success mb-2" target="_blank">
+                            <i class="fa fa-qrcode"></i> Confirm Attendance (QR)
+                        </a>
+                    }
+                </div>
+                <div id="mapContainer" style="display:none;">
+                    <div id="map" style="height:350px; width:100%;" class="mb-4"></div>
+                </div>
+            }
+            @if (Model.HasAttended)
+            {
+                <div class="alert alert-success mt-2">
+                    <i class="fa fa-check-circle"></i> You have already attended this session.
+                </div>
+            }
+            @if (Model.HasAttended)
+            {
+                <a href="@Url.Action("RateSession", "Student", new { sessionId = Model.SessionId })" class="btn btn-warning mt-2">
+                    <i class="fa fa-star"></i> Rate & Review Session
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Always show rate/review at the bottom as an option (optional, can remove if only after attended) -->
+    <div class="mt-3 text-center">
+        <a href="@Url.Action("RateSession", "Student", new { sessionId = Model.SessionId })" class="btn btn-outline-warning">
+            <i class="fa fa-star"></i> Rate & Review Session
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjAOTlvfmvmY2SGZSdR54_3LNda2B4xp0&libraries=places"></script>
+    <script>
+        function showRouteMap() {
+            $("#mapContainer").show();
+            drawRoute('@Model.Location');
+        }
+
+        function drawRoute(destinationAddress) {
+            if (!destinationAddress) {
+                $('#map').hide();
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                var origin = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+                var geocoder = new google.maps.Geocoder();
+                geocoder.geocode({ 'address': destinationAddress }, function(results, status) {
+                    if (status === 'OK') {
+                        var destination = results[0].geometry.location;
+                        var map = new google.maps.Map(document.getElementById('map'), {
+                            zoom: 13,
+                            center: origin
+                        });
+                        // Markers for origin and destination
+                        var markerA = new google.maps.Marker({
+                            position: origin,
+                            map: map,
+                            label: "A",
+                            title: "Your Location"
+                        });
+                        var markerB = new google.maps.Marker({
+                            position: destination,
+                            map: map,
+                            label: "B",
+                            title: "Session Venue"
+                        });
+                        // Draw route
+                        var directionsService = new google.maps.DirectionsService();
+                        var directionsRenderer = new google.maps.DirectionsRenderer();
+                        directionsRenderer.setMap(map);
+                        directionsService.route({
+                            origin: origin,
+                            destination: destination,
+                            travelMode: 'DRIVING'
+                        }, function(result, status) {
+                            if (status === 'OK') {
+                                directionsRenderer.setDirections(result);
+                            } else {
+                                alert('Could not plot driving route: ' + status);
+                            }
+                        });
+                    } else {
+                        alert('Could not find destination location: ' + status);
+                    }
+                });
+            }, function() {
+                alert('Could not get your current location.');
+            });
+        }
+    </script>
+}

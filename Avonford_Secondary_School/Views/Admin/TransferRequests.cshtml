@@ -1,0 +1,113 @@
+﻿@model List<Avonford_Secondary_School.Models.ViewModels.AdminTransferRequestListItemVM>
+@{
+    ViewBag.Title = "Stream Transfer Requests (Admin)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var statusColors = new Dictionary<string, string> {
+        { "TeacherApproved", "badge-info" },
+        { "AdminApproved", "badge-success" },
+        { "AdminRejected", "badge-danger" }
+    };
+}
+@section Styles{
+    <style>
+        .status-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 3px;
+        }
+
+        .status-TeacherApproved {
+            background: #17a2b8;
+        }
+
+        .status-AdminApproved {
+            background: #28a745;
+        }
+
+        .status-AdminRejected {
+            background: #dc3545;
+        }
+
+        .status-other {
+            background: #888;
+        }
+
+        .card-header-filter {
+            background: #f8f9fa;
+        }
+
+        .table-hover tbody tr:hover {
+            background: #f3f8ff;
+        }
+
+        .search-input {
+            max-width: 300px;
+        }
+    </style>
+}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-exchange-alt"></i> Transfer Requests (Admin)</h2>
+        <form method="get" class="form-inline">
+            <input class="form-control search-input mr-2" type="search" name="search" placeholder="Search student or stream..." value="@Request["search"]" />
+            <select name="status" class="form-control mr-2" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="TeacherApproved" @(ViewBag.Status == "TeacherApproved" ? "selected" : "")>Teacher Approved</option>
+                <option value="AdminApproved" @(ViewBag.Status == "AdminApproved" ? "selected" : "")>Admin Approved</option>
+                <option value="AdminRejected" @(ViewBag.Status == "AdminRejected" ? "selected" : "")>Admin Rejected</option>
+            </select>
+            <button class="btn btn-primary" type="submit"><i class="fas fa-filter"></i> Filter</button>
+        </form>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-header card-header-filter">
+            <b>Showing @Model.Count transfer requests</b>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Student</th>
+                        <th>Current</th>
+                        <th>Requested</th>
+                        <th>Status</th>
+                        <th>Date Submitted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var req in Model)
+                    {
+                        var badge = statusColors.ContainsKey(req.Status) ? statusColors[req.Status] : "badge-secondary";
+                        <tr>
+                            <td>
+                                <i class="fas fa-user text-info"></i>
+                                <b>@req.StudentName</b> <span class="text-muted small">(ID: @req.StudentID)</span>
+                            </td>
+                            <td>Grade @req.OldGrade <span class="badge badge-secondary">@req.OldStream</span></td>
+                            <td>Grade @req.NewGrade <span class="badge badge-primary">@req.NewStream</span></td>
+                            <td>
+                                <span class="status-dot status-@req.Status"></span>
+                                <span class="badge @badge">@req.Status.Replace("Approved", " Approved").Replace("Rejected", " Rejected")</span>
+                            </td>
+                            <td>@req.SubmittedDate.ToString("yyyy-MM-dd")</td>
+                            <td>
+                                <a class="btn btn-outline-primary btn-sm" href="@Url.Action("ReviewTransferRequest", "Admin", new { id = req.TransferRequestID })">
+                                    <i class="fas fa-eye"></i> Review
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">No requests found for selected filters.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

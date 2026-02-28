@@ -1,0 +1,178 @@
+2025-03-24 05:27:09 [INFO] StudentApplication form loaded successfully. [IP: ::1]
+2025-03-24 05:33:52 [INFO] StudentApplication form loaded successfully. [IP: ::1]
+2025-03-24 05:37:13 [INFO] StudentApplication form loaded successfully. [IP: ::1]
+2025-03-24 05:40:36 [INFO] StudentApplication form loaded successfully. [IP: ::1]
+2025-03-26 11:41:52 - Accessing Application Form (GET).
+2025-03-26 11:42:50 - Accessing Application Form (GET).
+2025-03-26 11:50:54 - Accessing Application Form (GET).
+2025-03-26 12:00:09 - Accessing Application Form (GET).
+2025-03-26 12:17:38 - Accessing Application Form (GET).
+2025-03-26 12:18:31 - Accessing Application Form (GET).
+2025-03-26 12:18:50 - Accessing Application Form (GET).
+2025-03-26 12:25:19 - Accessing Application Form (GET).
+2025-03-26 12:55:00 - Accessing Application Form (GET).
+2025-03-26 12:58:13 - Accessing Application Form (GET).
+2025-03-26 12:58:50 - Accessing Application Form (GET).
+2025-03-26 14:39:42 - Accessing Application Form (GET).
+2025-03-26 14:39:54 - Accessing Application Form (GET).
+2025-03-26 14:43:49 - Accessing Application Form (GET).
+2025-03-26 14:50:01 - Accessing Application Form (GET).
+2025-03-26 14:52:23 - POST Application received.
+2025-03-26 14:52:23 - Validating application fields.
+2025-03-26 14:52:23 - Validation complete. ModelState is invalid
+2025-03-26 14:52:23 - Manual validation errors detected.
+2025-03-26 14:53:05 - POST Application received.
+2025-03-26 14:53:05 - Validating application fields.
+2025-03-26 14:53:05 - Validation complete. ModelState is valid
+2025-03-26 14:53:05 - File conversion complete.
+2025-03-26 14:53:05 - Checking capacity for grade: 12 and stream: General
+2025-03-26 14:53:05 - Current count for grade 12 stream General is 0 and max capacity is 50
+2025-03-26 14:53:05 - Capacity check passed.
+2025-03-26 14:53:05 - Generated unique reference: APP-20250326145305-3A232148
+2025-03-26 14:53:05 - Application saved to database. Ref: APP-20250326145305-3A232148
+2025-03-26 14:53:05 - Sending confirmation email to: 22216554@dut4life.ac.za
+2025-03-26 14:53:26 - Failed to send email: Failure sending mail.
+2025-03-26 14:53:26 - Application processed successfully for 22216554@dut4life.ac.za
+2025-03-26 14:53:49 - POST Application received.
+2025-03-26 14:53:49 - Validating application fields.
+2025-03-26 14:53:49 - Validation complete. ModelState is invalid
+2025-03-26 14:53:49 - Manual validation errors detected.
+2025-03-26 14:54:31 - POST Application received.
+2025-03-26 14:54:31 - Validating application fields.
+2025-03-26 14:54:31 - Validation complete. ModelState is valid
+2025-03-26 14:54:31 - File conversion complete.
+2025-03-26 14:54:31 - Checking capacity for grade: 9 and stream: 
+2025-03-26 14:54:31 - Current count for grade 9 is 0 and max capacity is 120
+2025-03-26 14:54:31 - Capacity check passed.
+2025-03-26 14:54:31 - Generated unique reference: APP-20250326145431-42097F6D
+2025-03-26 14:54:31 - Application saved to database. Ref: APP-20250326145431-42097F6D
+2025-03-26 14:54:31 - Sending confirmation email to: 22216554@dut4life.ac.za
+2025-03-26 14:54:52 - Failed to send email: Failure sending mail.
+2025-03-26 14:54:52 - Application processed successfully for 22216554@dut4life.ac.za
+2025-03-26 16:19:53 - Accessing Application Form (GET).
+2025-03-26 16:22:43 - POST Application received.
+2025-03-26 16:22:43 - Validating application fields.
+2025-03-26 16:22:43 - Validation complete. ModelState is valid
+2025-03-26 16:22:43 - File conversion complete.
+2025-03-26 16:22:43 - Checking capacity for grade: 10 and stream: General
+2025-03-26 16:22:43 - Current count for grade 10 stream General is 0 and max capacity is 50
+2025-03-26 16:22:43 - Capacity check passed.
+2025-03-26 16:22:43 - Generated unique reference: APP-20250326162243-53C3119C
+2025-03-26 16:22:43 - Application saved to database. Ref: APP-20250326162243-53C3119C
+2025-03-26 16:22:43 - Sending confirmation email to: 22216554@dut4life.ac.za
+2025-03-26 16:23:04 - Failed to send email: Failure sending mail.
+2025-03-26 16:23:04 - Application processed successfully for 22216554@dut4life.ac.za
+2025-03-27 01:24:17 - Accessing Application Form (GET).
+2025-03-27 01:25:47 - POST Application received.
+2025-03-27 01:25:47 - Validating application fields.
+2025-03-27 01:25:47 - Validation complete. ModelState is valid
+2025-03-27 01:25:47 - File conversion complete.
+2025-03-27 01:25:47 - Checking capacity for grade: 10 and stream: Accounting
+2025-03-27 01:25:48 - Current count for grade 10 stream Accounting is 0 and max capacity is 40
+2025-03-27 01:25:48 - Capacity check passed.
+2025-03-27 01:25:48 - Generated unique reference: APP-20250327012548-7DCD5728
+2025-03-27 01:25:48 - Application saved to database. Ref: APP-20250327012548-7DCD5728
+2025-03-27 01:25:48 - Sending confirmation email to: Nonjabulo@gmail.com
+2025-03-27 01:26:09 - Failed to send email: Failure sending mail.
+2025-03-27 01:26:09 - Application processed successfully for Nonjabulo@gmail.com
+2025-03-27 05:51:48 - Accessing Application Form (GET).
+2025-03-27 06:01:19 - Accessing Application Form (GET).
+2025-03-27 06:01:27 - Accessing Application Form (GET).
+2025-03-27 06:41:55 - Accessing Application Form (GET).
+2025-03-27 07:16:53 - Accessing Application Form (GET).
+2025-03-27 07:18:22 - POST Application received.
+2025-03-27 07:18:22 - Validating application fields.
+2025-03-27 07:18:22 - Validation complete. ModelState is valid
+2025-03-27 07:18:23 - Duplicate NationalityID detected: 1234567891012
+2025-03-27 07:19:48 - POST Application received.
+2025-03-27 07:19:48 - Validating application fields.
+2025-03-27 07:19:48 - Validation complete. ModelState is valid
+2025-03-27 07:19:48 - File conversion complete.
+2025-03-27 07:19:48 - Checking capacity for grade: 10 and stream: Accounting
+2025-03-27 07:19:48 - Current count for grade 10 stream Accounting is 1 and max capacity is 40
+2025-03-27 07:19:48 - Capacity check passed.
+2025-03-27 07:19:48 - Generated unique reference: APP-20250327071948-695C9D85
+2025-03-27 07:19:48 - Application saved to database. Ref: APP-20250327071948-695C9D85
+2025-03-27 07:19:48 - Sending confirmation email to: 22216554@dut4life.ac.za
+2025-03-27 07:20:10 - Failed to send email: Failure sending mail.
+2025-03-27 07:20:10 - Application processed successfully for 22216554@dut4life.ac.za
+2025-03-27 07:31:20 - Accessing Application Form (GET).
+2025-03-27 07:32:12 - POST Application received.
+2025-03-27 07:32:12 - Validating application fields.
+2025-03-27 07:32:12 - Validation complete. ModelState is valid
+2025-03-27 07:32:12 - Duplicate NationalityID detected: 1234567891012
+2025-03-27 07:32:43 - POST Application received.
+2025-03-27 07:32:43 - Validating application fields.
+2025-03-27 07:32:43 - Validation complete. ModelState is valid
+2025-03-27 07:32:43 - File conversion complete.
+2025-03-27 07:32:43 - Checking capacity for grade: 11 and stream: Accounting
+2025-03-27 07:32:43 - Current count for grade 11 stream Accounting is 0 and max capacity is 40
+2025-03-27 07:32:43 - Capacity check passed.
+2025-03-27 07:32:43 - Generated unique reference: APP-20250327073243-8B731E67
+2025-03-27 07:32:43 - Application saved to database. Ref: APP-20250327073243-8B731E67
+2025-03-27 07:32:43 - Sending confirmation email to: 22216550@dut4life.ac.za
+2025-03-27 07:33:04 - Failed to send email: Failure sending mail.
+2025-03-27 07:33:04 - Application processed successfully for 22216550@dut4life.ac.za
+2025-04-14 06:44:45 - Accessing Application Form (GET).
+2025-04-14 06:47:00 - POST Application received.
+2025-04-14 06:47:00 - Validating application fields.
+2025-04-14 06:47:00 - Validation complete. ModelState is valid
+2025-04-14 06:47:00 - File conversion complete.
+2025-04-14 06:47:00 - Checking capacity for grade: 9 and stream: B
+2025-04-14 06:47:00 - Current count for grade 9 stream B is 0 and max capacity is 40
+2025-04-14 06:47:00 - Capacity check passed.
+2025-04-14 06:47:00 - Generated unique reference: APP-20250414064700-3C15906F
+2025-04-14 06:47:01 - Application saved to database. Ref: APP-20250414064700-3C15906F
+2025-04-14 06:47:01 - Sending confirmation email to: Nonjabulo@gmail.com
+2025-04-14 06:47:22 - Failed to send email: Failure sending mail.
+2025-04-14 06:47:22 - Application processed successfully for Nonjabulo@gmail.com
+2025-05-23 03:47:17 - Accessing Application Form (GET).
+2025-05-28 00:42:44 - Accessing Application Form (GET).
+2025-07-30 13:19:32 - Accessing Application Form (GET).
+2025-07-30 13:27:29 - Accessing Application Form (GET).
+2025-07-30 13:28:36 - Accessing Application Form (GET).
+2025-08-01 12:26:53 - Accessing Application Form (GET).
+2025-08-08 03:42:39 - Accessing Application Form (GET).
+2025-08-08 03:43:03 - Accessing Application Form (GET).
+2025-08-13 11:46:38 - Accessing Application Form (GET).
+2025-08-13 11:48:12 - Accessing Application Form (GET).
+2025-08-13 14:32:05 - Accessing Application Form (GET).
+2025-08-13 14:33:30 - POST Application received.
+2025-08-13 14:33:30 - Validating application fields.
+2025-08-13 14:33:30 - Validation complete. ModelState is valid
+2025-08-13 14:33:30 - File conversion complete.
+2025-08-13 14:33:30 - Checking capacity for grade: 10 and stream: Physical Science
+2025-08-13 14:33:30 - Current count for grade 10 stream Physical Science is 0 and max capacity is 60
+2025-08-13 14:33:30 - Capacity check passed.
+2025-08-13 14:33:30 - Generated unique reference: APP-20250813143330-ACF76BDE
+2025-08-13 14:33:33 - Application saved to database. Ref: APP-20250813143330-ACF76BDE
+2025-08-13 14:33:34 - Sending confirmation email to: kamvelihlembuthuma23@gmail.com
+2025-08-13 14:33:40 - Confirmation email sent successfully to kamvelihlembuthuma23@gmail.com
+2025-08-13 14:33:40 - Application processed successfully for kamvelihlembuthuma23@gmail.com
+2025-08-13 15:07:20 - Accessing Application Form (GET).
+2025-08-13 15:08:21 - POST Application received.
+2025-08-13 15:08:21 - Validating application fields.
+2025-08-13 15:08:21 - Validation complete. ModelState is valid
+2025-08-13 15:08:21 - File conversion complete.
+2025-08-13 15:08:21 - Checking capacity for grade: 11 and stream: General
+2025-08-13 15:08:21 - Current count for grade 11 stream General is 0 and max capacity is 50
+2025-08-13 15:08:21 - Capacity check passed.
+2025-08-13 15:08:21 - Generated unique reference: APP-20250813150821-82CF7635
+2025-08-13 15:08:21 - Application saved to database. Ref: APP-20250813150821-82CF7635
+2025-08-13 15:08:21 - Sending confirmation email to: Phiwokuhle@gmail.com
+2025-08-13 15:08:24 - Confirmation email sent successfully to Phiwokuhle@gmail.com
+2025-08-13 15:08:24 - Application processed successfully for Phiwokuhle@gmail.com
+2025-08-13 15:30:35 - Accessing Application Form (GET).
+2025-08-13 15:30:42 - Accessing Application Form (GET).
+2025-08-13 15:32:26 - POST Application received.
+2025-08-13 15:32:26 - Validating application fields.
+2025-08-13 15:32:26 - Validation complete. ModelState is valid
+2025-08-13 15:32:26 - File conversion complete.
+2025-08-13 15:32:26 - Checking capacity for grade: 12 and stream: Accounting
+2025-08-13 15:32:26 - Current count for grade 12 stream Accounting is 0 and max capacity is 40
+2025-08-13 15:32:26 - Capacity check passed.
+2025-08-13 15:32:26 - Generated unique reference: APP-20250813153226-16F32C69
+2025-08-13 15:32:26 - Application saved to database. Ref: APP-20250813153226-16F32C69
+2025-08-13 15:32:26 - Sending confirmation email to: Lisakhanya@gmail.com
+2025-08-13 15:32:30 - Confirmation email sent successfully to Lisakhanya@gmail.com
+2025-08-13 15:32:30 - Application processed successfully for Lisakhanya@gmail.com

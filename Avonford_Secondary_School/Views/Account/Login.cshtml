@@ -1,0 +1,102 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f0f0;
+            padding: 60px 20px;
+            color: #333;
+        }
+
+        .login-container {
+            max-width: 450px;
+            margin: auto;
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            text-align: center;
+            color: #ff6600;
+            margin-bottom: 30px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            height: 42px;
+            font-size: 15px;
+        }
+
+        .btn-primary {
+            background-color: #ff6600;
+            border-color: #ff6600;
+            font-weight: bold;
+            width: 100%;
+        }
+
+            .btn-primary:hover {
+                background-color: #e65c00;
+                border-color: #e65c00;
+            }
+
+        .btn-link {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            color: #ff6600;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        .text-danger {
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+
+        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Email)
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Enter your email" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password)
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Enter password" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+
+            <input type="submit" value="Login" class="btn btn-primary" />
+        }
+
+        @Html.ActionLink("Apply for Admission", "Apply", "Account", null, new { @class = "btn btn-link" })
+    </div>
+
+    @Scripts.Render("~/bundles/jqueryval")
+</body>
+</html>

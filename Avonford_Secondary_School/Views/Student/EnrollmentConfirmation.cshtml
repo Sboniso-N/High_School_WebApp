@@ -1,0 +1,17 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.EnrollmentConfirmationVM
+@{
+    ViewBag.Title = "Enrollment Confirmation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <div class="alert alert-success">
+        <h2>Enrollment Successful!</h2>
+        <hr />
+        <p><b>Class:</b> @Model.ClassName</p>
+        <p><b>Tutor:</b> @Model.Tutor</p>
+        <p><b>Subject:</b> @Model.SubjectName</p>
+        <p><b>Amount Paid:</b> <span class="badge bg-success">R @Model.PaidAmount.ToString("F2")</span></p>
+        <p><b>Date:</b> @Model.PaidAt.ToString("yyyy-MM-dd HH:mm")</p>
+        <a href="@Url.Action("MyTutorClasses", "Student")" class="btn btn-primary mt-2">Go to My Classes</a>
+    </div>
+</div>

@@ -1,0 +1,73 @@
+﻿@* Review & confirm reservation *@
+@model Avonford_Secondary_School.Models.ViewModels.BorrowVMs.BorrowPreviewVM
+@{
+    ViewBag.Title = "Review Borrow — " + Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panelish {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.05)
+    }
+
+    .rowish {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap
+    }
+
+    .kv {
+        margin: 4px 0
+    }
+
+        .kv b {
+            display: inline-block;
+            min-width: 140px
+        }
+
+    .btn-accent {
+        background: #22c55e;
+        color: #fff;
+        border: none
+    }
+
+        .btn-accent:hover {
+            background: #16a34a;
+            color: #fff
+        }
+</style>
+
+<div class="container" style="margin-top:15px">
+    <div class="panelish">
+        <h3 style="margin-top:0">Review your reservation</h3>
+        <div class="rowish">
+            <div style="flex:1 1 380px">
+                <div class="kv"><b>Book:</b> @Model.Title</div>
+                <div class="kv"><b>Fee per day:</b> R @Model.FeePerDay.ToString("0.00")</div>
+                <div class="kv"><b>Start:</b> @Model.StartDate.ToString("yyyy-MM-dd")</div>
+                <div class="kv"><b>End:</b> @Model.EndDate.ToString("yyyy-MM-dd")</div>
+                <div class="kv"><b>Planned days:</b> @Model.PlannedDays</div>
+                <hr />
+                <div class="kv" style="font-size:18px"><b>Planned total:</b> R @Model.PlannedBorrowFee.ToString("0.00")</div>
+                <div class="text-muted">@Model.PolicyNote</div>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("BorrowConfirm", "Book", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.BookID)
+            @Html.HiddenFor(m => m.StartDate)
+            @Html.Hidden("RequestedDays", Model.PlannedDays)
+            @Html.Hidden("FeePerDay", Model.FeePerDay)
+
+            <div class="text-right" style="margin-top:12px">
+                <a class="btn btn-default" href="@Url.Action("Borrow","Book", new { bookId = Model.BookID })">Back</a>
+                <button class="btn btn-accent">Confirm Reservation</button>
+            </div>
+        }
+    </div>
+</div>

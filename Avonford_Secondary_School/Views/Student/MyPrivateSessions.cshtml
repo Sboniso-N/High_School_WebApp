@@ -1,0 +1,66 @@
+﻿@model List<Avonford_Secondary_School.Models.ViewModels.PrivateSessionStatusVM>
+@{
+    ViewBag.Title = "My Private Session Requests";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <h2>My Private Sessions</h2>
+    <a href="/Student/BookPrivateSession">Private Sessions</a>
+    <br/>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tutor</th>
+                <th>Subject</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Status</th>
+                <th>Message/Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count == 0)
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">You have no private session requests yet.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var req in Model)
+                {
+                    <tr>
+                        <td>@req.TutorName</td>
+                        <td>@req.SubjectName</td>
+                        <td>@req.StartTime.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@req.EndTime.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>
+                            @if (req.Status == "Accepted")
+                            {
+                                <span class="badge bg-success">Accepted</span>
+                            }
+                            else if (req.Status == "Rejected")
+                            {
+                                <span class="badge bg-danger">Rejected</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(req.TutorResponse))
+                            {
+                                @req.TutorResponse
+                            }
+                            else if (!string.IsNullOrEmpty(req.TopicMessage))
+                            {
+                                @req.TopicMessage
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

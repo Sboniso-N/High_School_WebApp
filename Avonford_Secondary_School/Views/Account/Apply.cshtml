@@ -1,0 +1,232 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.ApplicationViewModel
+
+@{
+    ViewBag.Title = "Student Application";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f9f9f9;
+            padding: 40px;
+            color: #333;
+        }
+
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: #ff6600;
+            margin-bottom: 30px;
+        }
+
+        h4 {
+            color: #222;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+            margin-top: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: #ff6600;
+            border-color: #ff6600;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+            .btn-primary:hover {
+                background-color: #e65c00;
+                border-color: #e65c00;
+            }
+
+        .login-link {
+            margin-top: 40px;
+            display: block;
+            text-align: center;
+        }
+
+            .login-link a {
+                color: #ff6600;
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+        .text-danger {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Student Application Form</h2>
+
+        @using (Html.BeginForm("Apply", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </div>
+
+            <h4>Student Personal Information</h4>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.StudentFirstName)
+                @Html.TextBoxFor(m => m.StudentFirstName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.StudentFirstName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.StudentLastName)
+                @Html.TextBoxFor(m => m.StudentLastName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.StudentLastName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.NationalityID)
+                @Html.TextBoxFor(m => m.NationalityID, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.NationalityID, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.DateOfBirth)
+                @Html.TextBoxFor(m => m.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
+            </div>
+
+            <h4>Parent/Guardian Information</h4>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ParentName)
+                @Html.TextBoxFor(m => m.ParentName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ParentName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ParentID)
+                @Html.TextBoxFor(m => m.ParentID, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ParentID, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ParentEmail)
+                @Html.TextBoxFor(m => m.ParentEmail, new { @class = "form-control", type = "email" })
+                @Html.ValidationMessageFor(m => m.ParentEmail, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ParentContact)
+                @Html.TextBoxFor(m => m.ParentContact, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ParentContact, "", new { @class = "text-danger" })
+            </div>
+
+            <h4>Application Details</h4>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.GradeSelection)
+                @Html.DropDownListFor(m => m.GradeSelection, Model.AvailableGrades, "Select Grade", new { @class = "form-control", id = "GradeSelection" })
+                @Html.ValidationMessageFor(m => m.GradeSelection, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.StreamSelection, "Stream")
+                @Html.DropDownListFor(m => m.StreamSelection, Model.AvailableStreams, "Select Stream", new { @class = "form-control", id = "StreamSelection" })
+                @Html.ValidationMessageFor(m => m.StreamSelection, "", new { @class = "text-danger" })
+            </div>
+
+            <h4>Document Uploads</h4>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.StudentIDDoc)
+                <input type="file" name="StudentIDDoc" class="form-control" />
+                @Html.ValidationMessageFor(m => m.StudentIDDoc, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ParentIDDoc)
+                <input type="file" name="ParentIDDoc" class="form-control" />
+                @Html.ValidationMessageFor(m => m.ParentIDDoc, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.PreviousReportCard)
+                <input type="file" name="PreviousReportCard" class="form-control" />
+                @Html.ValidationMessageFor(m => m.PreviousReportCard, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.ApplicationForm)
+                <input type="file" name="ApplicationForm" class="form-control" />
+                @Html.ValidationMessageFor(m => m.ApplicationForm, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.AdditionalComments)
+                @Html.TextAreaFor(m => m.AdditionalComments, new { @class = "form-control", rows = "4" })
+                @Html.ValidationMessageFor(m => m.AdditionalComments, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Submit Application" class="btn btn-primary" />
+            </div>
+        }
+
+        <div class="login-link">
+            Already applied? <a href="@Url.Action("Login", "Account")">Login Here</a>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            updateStreamOptions();
+
+            $('#GradeSelection').change(function () {
+                updateStreamOptions();
+            });
+
+            function updateStreamOptions() {
+                var grade = $('#GradeSelection').val();
+                var streamDropdown = $('#StreamSelection');
+                streamDropdown.empty();
+                streamDropdown.append($('<option>', { value: '', text: 'Select Stream' }));
+                if (grade === '8' || grade === '9') {
+                    // For Grade 8 & 9, only display A, B, and C streams
+                    streamDropdown.append($('<option>', { value: 'A', text: 'A' }));
+                    streamDropdown.append($('<option>', { value: 'B', text: 'B' }));
+                    streamDropdown.append($('<option>', { value: 'C', text: 'C' }));
+                }
+                else if (parseInt(grade) >= 10) {
+                    // For Grades 10-12, display the designated streams (Physical Science, General, Accounting)
+                    streamDropdown.append($('<option>', { value: 'Physical Science', text: 'Physical Science' }));
+                    streamDropdown.append($('<option>', { value: 'General', text: 'General' }));
+                    streamDropdown.append($('<option>', { value: 'Accounting', text: 'Accounting' }));
+                }
+            }
+        });
+    </script>
+</body>
+</html>

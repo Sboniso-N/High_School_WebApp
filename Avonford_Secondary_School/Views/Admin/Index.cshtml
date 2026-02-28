@@ -1,0 +1,156 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.AdminIndexViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Student Dashboard - Avonford Secondary School";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #fff;
+            color: #222;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+            .navbar-custom .navbar-brand {
+                font-size: 24px;
+                font-weight: bold;
+                color: #fff !important;
+            }
+
+            .navbar-custom .navbar-nav > li > a {
+                color: #fff !important;
+                font-size: 16px;
+            }
+
+                .navbar-custom .navbar-nav > li > a:hover {
+                    color: #222 !important;
+                }
+
+        .admin-header {
+            background-image: url('../../Content/images/grade-12e3-fun-picture.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 280px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+            .admin-header .overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+            }
+
+            .admin-header .text {
+                position: relative;
+                z-index: 1;
+                color: white;
+                text-align: center;
+                padding-top: 90px;
+            }
+
+                .admin-header .text h1 {
+                    font-size: 42px;
+                    font-weight: bold;
+                }
+
+        .dashboard-section {
+            padding: 40px 20px;
+        }
+
+        .admin-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+            .admin-stats .stat-box {
+                background: #f4f4f4;
+                padding: 30px;
+                border: 2px solid #222;
+                border-radius: 8px;
+                width: 30%;
+            }
+
+                .admin-stats .stat-box h3 {
+                    color: #ff6600;
+                }
+
+        .admin-actions {
+            text-align: center;
+        }
+
+            .admin-actions .btn {
+                margin: 10px;
+                padding: 15px 25px;
+                font-size: 16px;
+            }
+    </style>
+</head>
+<body>
+    <!-- Admin Navbar -->
+    
+
+    <!-- Header -->
+    <div class="admin-header">
+        <div class="overlay"></div>
+        <div class="text">
+            <h1>Welcome, Admin</h1>
+            <p>Manage Applications, Teachers, and Subject Allocations</p>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="container dashboard-section">
+        <div class="admin-stats">
+            <div class="stat-box">
+                <h3>@Model.TotalPending</h3>
+                <p>Pending Applications</p>
+            </div>
+            <div class="stat-box">
+                <h3>@Model.TotalApproved</h3>
+                <p>Approved Applications</p>
+            </div>
+            <div class="stat-box">
+                <h3>@Model.TotalRejected</h3>
+                <p>Rejected Applications</p>
+            </div>
+        </div>
+
+        <div class="admin-actions">
+            @Html.ActionLink("Register a new tutor ", "RegisterTutor", "Account", null, new { @class = "btn btn-warning" })
+            <br />
+            @Html.ActionLink("Manage Tutors", "TutorsList", "Account", null, new { @class = "btn btn-warning" })
+            <br />
+            @Html.ActionLink("View Pending Applications", "PendingApplications", "Admin", null, new { @class = "btn btn-warning" })
+            @Html.ActionLink("Register New Teacher", "RegisterTeacher", "Admin", null, new { @class = "btn btn-success" })
+            @Html.ActionLink("Allocate Teachers", "AllocateTeacher", "Admin", null, new { @class = "btn btn-info" })
+            @Html.ActionLink("View Previous Teacher Allocations", "TeacherAllocationHistory", "Admin", null, new { @class = "btn btn-warning" })
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

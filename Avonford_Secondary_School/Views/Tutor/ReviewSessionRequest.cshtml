@@ -1,0 +1,29 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorReviewSessionRequestVM
+@{
+    ViewBag.Title = "Review Private Session Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4" style="max-width:600px;">
+    <div class="card shadow">
+        <div class="card-body">
+            <h3>Review Private Session Request</h3>
+            <dl class="row">
+                <dt class="col-md-4">Student:</dt>
+                <dd class="col-md-8">@Model.StudentName</dd>
+                <dt class="col-md-4">Subject:</dt>
+                <dd class="col-md-8">@Model.SubjectName</dd>
+                <dt class="col-md-4">Time:</dt>
+                <dd class="col-md-8">@Model.StartTime.ToString("yyyy-MM-dd HH:mm") to @Model.EndTime.ToString("yyyy-MM-dd HH:mm")</dd>
+                <dt class="col-md-4">Topic:</dt>
+                <dd class="col-md-8">@Model.TopicMessage</dd>
+            </dl>
+            @using (Html.BeginForm("AcceptSessionRequest", "Tutor", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.RequestID)
+                <button type="submit" class="btn btn-success">Accept Session</button>
+            }
+            <a href="@Url.Action("RejectSessionRequest", "Tutor", new { requestId = Model.RequestID })" class="btn btn-danger ms-2">Reject</a>
+        </div>
+    </div>
+</div>

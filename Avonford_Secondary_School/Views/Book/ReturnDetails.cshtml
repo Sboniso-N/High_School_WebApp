@@ -1,0 +1,240 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.ReturnVMs.ReturnDetailBuyerVM
+@{
+    ViewBag.Title = "Return Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panelish {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.05)
+    }
+
+    .stepper {
+        display: flex;
+        gap: 12px;
+        margin: 4px 0 16px
+    }
+
+    .step {
+        flex: 1 1 0;
+        display: flex;
+        align-items: center;
+        gap: 8px
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #cbd5e1
+    }
+
+    .step.done .dot {
+        background: #22c55e
+    }
+
+    .step.active .dot {
+        background: #0ea5e9
+    }
+
+    .step .label {
+        font-size: 12px;
+        color: #334155
+    }
+
+    .badge {
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px
+    }
+
+    .b-pending {
+        background: #fff3cd;
+        color: #8a6d3b
+    }
+
+    .b-needs {
+        background: #e3f2fd;
+        color: #0d47a1
+    }
+
+    .b-refunded {
+        background: #e8f5e9;
+        color: #2e7d32
+    }
+
+    .b-declined {
+        background: #ffebee;
+        color: #b71c1c
+    }
+
+    .thumbs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap
+    }
+
+        .thumbs img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #eee
+        }
+
+    .muted {
+        color: #64748b
+    }
+</style>
+
+@functions{
+    int CurrentStep(string s)
+    {
+        s = (s ?? "").Trim();
+        if (s.Equals("Refunded", StringComparison.OrdinalIgnoreCase)) return 4;
+        if (s.Equals("Declined", StringComparison.OrdinalIgnoreCase)) return 3;
+        if (s.Equals("Pending", StringComparison.OrdinalIgnoreCase) ||
+            s.Equals("NeedsInfo", StringComparison.OrdinalIgnoreCase) ||
+            s.Equals("Needs Info", StringComparison.OrdinalIgnoreCase)) return 2;
+        return 1; // Submitted
+    }
+    string BadgeClass(string s)
+    {
+        s = (s ?? "").ToLowerInvariant();
+        if (s == "refunded") return "b-refunded";
+        if (s == "declined") return "b-declined";
+        if (s == "needsinfo" || s == "needs info") return "b-needs";
+        return "b-pending";
+    }
+}
+
+<div class="container" style="margin-top:15px" data-return-id="@Model.ReturnID">
+    <div class="panelish">
+        <h3 style="margin-top:0">RMA #@Model.ReturnID — <span class="muted">@Model.BookTitle</span></h3>
+
+        <div class="stepper" id="stepper">
+            @{
+                var step = CurrentStep(Model.Status);
+                var labels = new[] { "Submitted", "Under Review", "Decision", "Refunded" };
+                for (int i = 1; i <= 4; i++)
+                {
+                    var cls = i < step ? "step done" : (i == step ? "step active" : "step");
+                    <div class="@cls"><div class="dot"></div><div class="label">@labels[i - 1]</div></div>
+                }
+            }
+        </div>
+
+        <div style="display:flex;gap:20px;flex-wrap:wrap">
+            <div style="flex:1 1 360px">
+                <div class="muted">Reason</div>
+                <div style="margin-bottom:10px">@Model.Reason</div>
+
+                <div class="muted">Your description</div>
+                <div style="white-space:pre-wrap;margin-bottom:12px">@Model.Description</div>
+
+                <div class="muted">Status</div>
+                <div>
+                    <span id="statusBadge" class="badge @BadgeClass(Model.Status)">@Model.Status</span>
+                    <span class="muted" id="decisionAt">
+                        @if (Model.DecisionAt.HasValue)
+                        {@(" • " + Model.DecisionAt.Value.ToString("yyyy-MM-dd HH:mm"))}
+                    </span>
+                </div>
+            </div>
+
+            <div style="flex:1 1 240px">
+                <div class="muted">Refund summary</div>
+                <div id="refundBox" style="font-weight:600">
+                    Book: R @Model.RefundAmountBookValue.ToString("0.00")<br />
+                    Delivery: R @Model.RefundAmountDelivery.ToString("0.00")<br />
+                    Total: R <span id="refundTotal">@Model.RefundTotal.ToString("0.00")</span>
+                </div>
+
+                <div class="muted" style="margin-top:12px">Admin response</div>
+                <div id="adminComment">@(!string.IsNullOrWhiteSpace(Model.AdminComment) ? Model.AdminComment : "(none yet)")</div>
+            </div>
+        </div>
+
+        @if (Model.ImageBase64?.Any() == true)
+        {
+            <hr />
+            <div class="muted" style="margin-bottom:6px">Your photos</div>
+            <div class="thumbs">
+                @foreach (var b64 in Model.ImageBase64)
+                {
+                    <img src="data:image/jpeg;base64,@b64" alt="evidence" />
+                }
+            </div>
+        }
+
+        <div class="text-right" style="margin-top:16px">
+            <a class="btn btn-default" href="@Url.Action("MyReturns","Book")">Back to My Returns</a>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var root = document.querySelector("[data-return-id]");
+    if (!root) return;
+    var id = root.getAttribute("data-return-id");
+
+    function cssForStatus(s) {
+        s = (s || "").toLowerCase();
+        if (s === "refunded") return "b-refunded";
+        if (s === "declined") return "b-declined";
+        if (s === "needsinfo" || s === "needs info") return "b-needs";
+        return "b-pending";
+    }
+    function stepFor(s) {
+        s = (s || "").toLowerCase();
+        if (s === "refunded") return 4;
+        if (s === "declined") return 3;
+        if (s === "pending" || s === "needsinfo" || s === "needs info") return 2;
+        return 1;
+    }
+    function paintStepper(active) {
+        var steps = document.querySelectorAll("#stepper .step");
+        steps.forEach(function (el, idx) {
+            var n = idx + 1;
+            el.className = "step" + (n < active ? " done" : (n === active ? " active" : ""));
+        });
+    }
+
+    function tick() {
+        fetch('@Url.Action("ReturnStatus","Book")?id=' + encodeURIComponent(id))
+            .then(r => r.json())
+            .then(j => {
+                if (!j || !j.ok) return;
+
+                // status badge
+                var badge = document.getElementById("statusBadge");
+                badge.textContent = j.status;
+                badge.className = "badge " + cssForStatus(j.status);
+
+                // decision time
+                var dec = document.getElementById("decisionAt");
+                dec.textContent = j.decisionAt ? (" • " + j.decisionAt) : "";
+
+                // refunds
+                document.getElementById("refundTotal").textContent = (j.refundTotal || 0).toFixed(2);
+                var box = document.getElementById("refundBox");
+                if (box) box.innerHTML =
+                    "Book: R " + (j.refundBook || 0).toFixed(2) + "<br/>" +
+                    "Delivery: R " + (j.refundDelivery || 0).toFixed(2) + "<br/>" +
+                    "Total: R <span id='refundTotal'>" + (j.refundTotal || 0).toFixed(2) + "</span>";
+
+                // stepper
+                paintStepper(stepFor(j.status));
+            })
+            .catch(() => { /* ignore */ });
+    }
+
+    // initial + poll every 15s
+    tick();
+    setInterval(tick, 15000);
+})();
+</script>

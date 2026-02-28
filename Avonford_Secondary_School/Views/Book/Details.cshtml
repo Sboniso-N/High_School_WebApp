@@ -1,0 +1,166 @@
+﻿@* ========================= Views/Book/Details.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.BookDetailsVM
+@{
+    ViewBag.Title = Model.Title + " — Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .badge-chip {
+        background: #ffe8d9;
+        color: #b34700;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 12px
+    }
+
+    .price-xl {
+        font-size: 28px;
+        font-weight: 800
+    }
+
+    .zoomable {
+        transition: transform .2s ease
+    }
+
+        .zoomable:hover {
+            transform: scale(1.03)
+        }
+
+    .thumb {
+        width: 70px;
+        height: 70px;
+        object-fit: cover;
+        margin: 4px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent
+    }
+
+        .thumb.active {
+            border-color: #ff6600
+        }
+
+    .btn-accent {
+        background: #ff6600;
+        color: #fff;
+        border: none
+    }
+
+        .btn-accent:hover {
+            background: #e65c00;
+            color: #fff
+        }
+
+    .btn-ghost {
+        background: #fff;
+        border: 1px solid #ddd
+    }
+</style>
+
+<div class="container" style="margin-top:15px">
+    <div class="row">
+        <div class="col-md-6">
+            @if (Model.ImageBase64 != null && Model.ImageBase64.Any())
+            {
+                <img id="mainImg" class="img-responsive zoomable" alt="Cover" src="data:image;base64,@Model.ImageBase64.First()" />
+                <div style="margin-top:8px; display:flex; flex-wrap:wrap">
+                    @{
+                        var idx = 0;
+                        foreach (var b64 in Model.ImageBase64)
+                        {
+                            <img class="thumb @(idx==0?"active":"")" data-src="data:image;base64,@b64" src="data:image;base64,@b64" />
+                            idx++;
+                        }
+                    }
+                </div>
+            }
+            else
+            {
+                <img class="img-responsive zoomable" src="~/Content/images/Edu-DHS-e1675942435742-780x341.jpg" alt="Cover" />
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h2 style="margin-top:0">@Model.Title</h2>
+            <div style="color:#666; margin-bottom:8px;">@(!string.IsNullOrWhiteSpace(Model.Author) ? Model.Author : "Unknown author")</div>
+            <div style="margin-bottom:8px">
+                <span class="badge-chip">@Model.Condition</span>
+                @if (!string.IsNullOrWhiteSpace(Model.Edition))
+                {<span class="badge-chip">Edition: @Model.Edition</span>}
+                @if (!string.IsNullOrWhiteSpace(Model.ISBN))
+                {<span class="badge-chip">ISBN: @Model.ISBN</span>}
+            </div>
+
+            <div class="price-xl">R @Model.Price.ToString("0.00")</div>
+            @if (Model.IsNegotiable)
+            {<div class="text-muted">Negotiable — polite haggling encouraged.</div>}
+
+            <hr />
+            <div>
+                <h4 class="accent">Pickup Location</h4>
+                <p style="margin-bottom:6px">@Model.PickupAddress</p>
+                <small class="text-muted">Exact pin shared after purchase for safety.</small>
+            </div>
+
+            <hr />
+            <div>
+                <h4 class="accent">Seller</h4>
+                <p>@(string.IsNullOrWhiteSpace(Model.SellerEmail) ? "Private seller" : Model.SellerEmail)</p>
+            </div>
+
+            <hr />
+            <div class="clearfix">
+                @if (Model.CanBuy)
+                {
+                    <div class="btn-group">
+                        <a class="btn btn-accent btn-lg" href="@Url.Action("Checkout","Book", new { id = Model.BookID })">
+                            <span class="glyphicon glyphicon-shopping-cart"></span> Buy Now
+                        </a>
+                        <a class="btn btn-ghost btn-lg" href="@Url.Action("Borrow","Book", new { bookId = Model.BookID })" title="Borrow instead">
+                            <span class="glyphicon glyphicon-time"></span> Borrow
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info" style="margin:0">Login as a different user to purchase/borrow, or this item may no longer be available.</div>
+                }
+                <button id="shareBtn" class="btn btn-default pull-right" title="Copy link"><span class="glyphicon glyphicon-link"></span></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:24px">
+        <div class="col-md-12">
+            <h3 class="accent">Description</h3>
+            <div style="line-height:1.7">@Html.Raw(Model.DescriptionHtml)</div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        (function () {
+            // thumbnails
+            var main = document.getElementById('mainImg');
+            document.querySelectorAll('.thumb').forEach(t => {
+                t.addEventListener('click', () => {
+                    document.querySelectorAll('.thumb').forEach(x => x.classList.remove('active'));
+                    t.classList.add('active');
+                    main.src = t.getAttribute('data-src');
+                });
+            });
+
+            // share
+            document.getElementById('shareBtn').addEventListener('click', async () => {
+                try {
+                    const url = window.location.href;
+                    await navigator.clipboard.writeText(url);
+                    const el = document.getElementById('shareBtn');
+                    el.innerHTML = '<span class="glyphicon glyphicon-ok"></span>';
+                    setTimeout(() => el.innerHTML = '<span class="glyphicon glyphicon-link"></span>', 1200);
+                } catch (e) { }
+            });
+        })();
+    </script>
+}

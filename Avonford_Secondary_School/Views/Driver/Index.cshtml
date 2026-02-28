@@ -1,0 +1,108 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.DriverDashboardVM
+@{
+    ViewBag.Title = "Driver Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .chip {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f3f4f6
+    }
+
+    .list-card {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 10px;
+        background: #fff
+    }
+
+    .muted {
+        color: #6b7280
+    }
+</style>
+
+<div class="container" style="margin-top:15px">
+    <h3>@(ViewBag.Welcome ?? "Welcome")</h3>
+
+    <div class="list-card">
+        <form method="post" action="@Url.Action("ToggleAvailability","Driver")" style="display:flex;align-items:center;gap:12px">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="driverId" value="@Model.DriverID" />
+            <div class="chip">Status: <strong>@Model.DriverStatus</strong></div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                <input type="checkbox" name="online" value="true" @(Model.IsOnline ? "checked" : "") />
+                <span>@(Model.IsOnline ? "Online" : "Offline")</span>
+            </label>
+            <button class="btn btn-primary btn-sm" type="submit">Apply</button>
+        </form>
+    </div>
+
+    <h4 style="margin-top:20px">Active Orders</h4>
+    @if (!Model.ActiveOrders.Any())
+    {
+        <div class="muted">No active orders assigned.</div>
+    }
+    else
+    {
+        foreach (var o in Model.ActiveOrders)
+        {
+            <div class="list-card">
+                <div><strong>#@o.OrderID</strong> — @o.BookTitle</div>
+                <div class="muted">Pickup: @o.PickupAddress</div>
+                <div class="muted">Deliver to: @o.DeliveryAddress</div>
+                <div style="margin-top:8px">
+                    <a class="btn btn-default btn-xs" href="@Url.Action("Route","Driver", new { orderId = o.OrderID })">Open Route</a>
+                    <form method="post" action="@Url.Action("BeginTrip","Driver")" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="orderId" value="@o.OrderID" />
+                        <button class="btn btn-success btn-xs" type="submit">Begin Trip</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+
+    <h4 style="margin-top:20px">In Progress</h4>
+    @if (!Model.InProgressOrders.Any())
+    {
+        <div class="muted">Nothing in progress.</div>
+    }
+    else
+    {
+        foreach (var o in Model.InProgressOrders)
+        {
+            <div class="list-card">
+                <div><strong>#@o.OrderID</strong> — @o.BookTitle</div>
+                <div class="muted">Pickup: @o.PickupAddress</div>
+                <div class="muted">Deliver to: @o.DeliveryAddress</div>
+                <div style="margin-top:8px">
+                    <a class="btn btn-default btn-xs" href="@Url.Action("Route","Driver", new { orderId = o.OrderID })">Open Route</a>
+                    <form method="post" action="@Url.Action("ContinueTrip","Driver")" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="orderId" value="@o.OrderID" />
+                        <button class="btn btn-info btn-xs" type="submit">Continue Trip</button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+
+    <h4 style="margin-top:20px">Completed (last 30 days)</h4>
+    @if (!Model.CompletedOrders.Any())
+    {
+        <div class="muted">No recent deliveries.</div>
+    }
+    else
+    {
+        foreach (var o in Model.CompletedOrders)
+        {
+            <div class="list-card">
+                <div><strong>#@o.OrderID</strong> — @o.BookTitle</div>
+                <div class="muted">Delivered</div>
+            </div>
+        }
+    }
+</div>

@@ -1,0 +1,200 @@
+﻿@{
+    Layout = null;
+    ViewBag.Title = "Tutor Dashboard - Avonford Secondary School";
+    var profilePic = ViewBag.ProfilePic as string;
+    var tutorName = ViewBag.TutorName as string;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <style>
+    body {
+        background-color: #fff;
+        color: #222;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    /* Tutor Navbar */
+    .navbar-tutor {
+        background-color: #ff6600;
+        border: none;
+        border-radius: 0;
+        margin-bottom: 0;
+        min-height: 64px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+    .navbar-tutor .navbar-brand {
+        font-size: 24px;
+        font-weight: bold;
+        color: #fff !important;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .navbar-tutor .navbar-nav > li > a {
+        color: #fff !important;
+        font-size: 16px;
+        padding-top: 18px;
+        padding-bottom: 18px;
+        transition: color 0.3s;
+    }
+    .navbar-tutor .navbar-nav > li > a:hover {
+        color: #222 !important;
+        background: #fff1e5;
+    }
+    .navbar-tutor .navbar-profile {
+        display: flex;
+        align-items: center;
+        margin-left: 25px;
+    }
+    .navbar-tutor .profile-img-navbar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        background: #eee;
+        margin-right: 10px;
+    }
+    .navbar-tutor .profile-name-navbar {
+        color: #fff;
+        font-weight: bold;
+        font-size: 16px;
+        margin-right: 6px;
+        white-space: nowrap;
+        margin-top: 10px;
+    }
+    /* Dashboard Cards */
+    .dashboard-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 14px rgba(40,40,40,0.08), 0 1.5px 6px rgba(255,102,0,0.08);
+        padding: 32px 24px;
+        margin: 18px 0;
+        transition: box-shadow 0.2s;
+        border: 1.5px solid #ff6600;
+    }
+    .dashboard-card:hover {
+        box-shadow: 0 6px 22px rgba(255,102,0,0.18), 0 2px 10px rgba(40,40,40,0.12);
+    }
+    .dashboard-btn {
+        margin-top: 18px;
+        border-radius: 10px;
+        font-size: 17px;
+        background: #ff6600;
+        border: none;
+        color: #fff;
+        padding: 8px 30px;
+        box-shadow: 0 2px 6px rgba(255,102,0,0.08);
+        transition: background 0.2s;
+    }
+    .dashboard-btn:hover {
+        background: #db5400;
+        color: #fff;
+    }
+    /* Responsive Grid */
+    .dashboard-container {
+        padding: 38px 0 18px 0;
+        max-width: 900px;
+    }
+    @@media (max-width: 991px) {
+        .dashboard-container { max-width: 100%; }
+    }
+    /* Fade Animation */
+    .fade-in {
+        animation: fadeIn 1.2s ease-in;
+        opacity: 1;
+    }
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(18px);}
+        to { opacity: 1; transform: none;}
+    }
+    </style>
+</head>
+<body>
+    <!-- Tutor Navbar -->
+    <nav class="navbar navbar-tutor">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Tutor/Index">Avonford Secondary School</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Tutor/Index">Dashboard</a></li>
+                <li><a href="/Tutor/MyClasses">My Classes</a></li>
+                <li><a href="/Tutor/CreateClass">Create Class</a></li>
+                <li><a href="/Tutor/PrivateSessionRequests">Private Sessions</a></li>
+ 
+                <li><a href="/Tutor/ScanAttendance">Scan Attendance</a></li>
+
+                <li><a href="/Account/Logout">Logout</a></li>
+                <li class="navbar-profile" style="padding-left:24px;">
+                    <img src="@(string.IsNullOrEmpty(profilePic) ? "https://via.placeholder.com/120x120?text=Tutor" : "data:image/jpeg;base64," + profilePic)" class="profile-img-navbar" alt="Tutor" />
+                    <span class="profile-name-navbar">@tutorName</span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Dashboard Content -->
+    <div class="container dashboard-container">
+        <div class="row fade-in">
+            <div class="col-md-6">
+                <div class="dashboard-card text-center">
+                    <h4 style="margin-top:18px;font-weight:bold;color:#ff6600;">My Classes</h4>
+                    <p>View and manage your classes, add resources, see enrolled students, and more.</p>
+                    <a href="/Tutor/MyClasses" class="dashboard-btn">My Classes</a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card text-center">
+                    <h4 style="margin-top:18px;font-weight:bold;color:#ff6600;">Create New Class</h4>
+                    <p>Start a new class for your students, set the schedule, upload syllabus and details.</p>
+                    <a href="/Tutor/CreateClass" class="dashboard-btn">Create Class</a>
+                </div>
+            </div>
+        </div>
+        <div class="row fade-in">
+            <div class="col-md-6">
+                <div class="dashboard-card text-center">
+                    <h4 style="margin-top:18px;font-weight:bold;color:#ff6600;">Private Session Requests</h4>
+                    <p>Approve or reject requests for private sessions from students.</p>
+                    <a href="/Tutor/PrivateSessionRequests" class="dashboard-btn">Private Sessions</a>
+                </div>
+            </div>
+        
+        </div>
+        <div class="row fade-in">
+            <div class="col-md-6">
+                <div class="dashboard-card text-center">
+                    <h4 style="margin-top:18px;font-weight:bold;color:#ff6600;">Scan Tutorial Attendance</h4>
+                    <p>Quickly scan QR codes for class or private session attendance.</p>
+                    <a href="/Tutor/ScanAttendance" class="dashboard-btn">Scan Tutorial Attendance</a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="dashboard-card text-center">
+                    <h4 style="margin-top:18px;font-weight:bold;color:#ff6600;">Notifications</h4>
+                    <p> View all your Notifications</p>
+                    <a href="/Account/MyNotifications" class="dashboard-btn">Notifications</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer style="background:#222; color:#ccc; text-align:center; padding:18px 0; margin-top:50px;">
+        &copy; 2025 Avonford Secondary School. All rights reserved.
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script>
+    $(function(){
+        $('.fade-in').css('opacity',0).animate({opacity:1},1200);
+    });
+    </script>
+</body>
+</html>

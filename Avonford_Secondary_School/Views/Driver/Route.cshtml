@@ -1,0 +1,138 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.DriverRouteVM
+@using System.Web
+@{
+    ViewBag.Title = "Route";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panelish {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.05)
+    }
+
+    #map {
+        height: 520px;
+        width: 100%
+    }
+
+    .muted {
+        color: #6b7280
+    }
+</style>
+
+<div class="container" style="margin-top:15px">
+    <div class="panelish">
+        <h3 style="margin-top:0">Order #@Model.OrderID — @Model.BookTitle</h3>
+        <div class="muted">Driver: @Model.DriverName</div>
+        <div class="row" style="margin-top:10px">
+            <div class="col-sm-8">
+                <div id="map"></div>
+            </div>
+            <div class="col-sm-4">
+                <div class="panelish">
+                    <div><strong>Pickup:</strong> @Model.PickupAddress</div>
+                    <div><strong>Deliver to:</strong> @Model.DeliveryAddress</div>
+                    <hr />
+                    <div class="muted" id="gpsStatus">GPS: waiting…</div>
+                    <form method="post" action="@Url.Action("MarkDelivered","Driver")" style="margin-top:10px">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="orderId" value="@Model.OrderID" />
+                        <button class="btn btn-success">Mark as Delivered</button>
+                    </form>
+                    <div class="muted" style="margin-top:10px;font-size:12px">
+                        Your browser location is used to update the buyer’s tracking map.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-right" style="margin-top:10px">
+            <a class="btn btn-default" href="@Url.Action("Index","Driver")">Back</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=@ViewBag.GoogleMapsApiKey"></script>
+<script>
+(function(){
+    var map, directionsService, directionsRenderer, driverMarker;
+    var driverId = @Model.DriverID;
+    var pickupAddr = "@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.PickupAddress ?? "", true))";
+    var dropAddr = "@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.DeliveryAddress ?? "", true))";
+
+    function init(){
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat:-29.8587,lng:31.0218}, zoom: 12
+        });
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({suppressMarkers:true});
+        directionsRenderer.setMap(map);
+
+        // Draw pickup -> drop route initially
+        drawRouteByAddress(pickupAddr, dropAddr);
+
+        // Start GPS watch
+        if(navigator.geolocation){
+            navigator.geolocation.watchPosition(onPos, onErr, {enableHighAccuracy:true, maximumAge:5000, timeout:10000});
+        }else{
+            document.getElementById('gpsStatus').innerText = "GPS: not supported";
+        }
+    }
+
+    function onPos(p){
+        var lat = p.coords.latitude, lng = p.coords.longitude;
+        document.getElementById('gpsStatus').innerText = "GPS: " + lat.toFixed(5) + ", " + lng.toFixed(5);
+
+        // update marker
+        var here = new google.maps.LatLng(lat, lng);
+        if(!driverMarker){
+            driverMarker = new google.maps.Marker({position: here, map: map, label:"D", title:"You"});
+        }else{
+            driverMarker.setPosition(here);
+        }
+
+        // send ping
+        fetch("@Url.Action("PostLocation","Driver")", {
+            method: "POST",
+            headers: {"Content-Type":"application/x-www-form-urlencoded"},
+            body: "driverId=" + encodeURIComponent(driverId) + "&lat=" + encodeURIComponent(lat) + "&lng=" + encodeURIComponent(lng)
+        }).catch(()=>{});
+    }
+
+    function onErr(e){
+        document.getElementById('gpsStatus').innerText = "GPS error: " + (e && e.message ? e.message : "unknown");
+    }
+
+    function drawRouteByAddress(originAddr, destAddr){
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({address: originAddr}, function(ro, rs){
+            if(rs!=='OK' || !ro[0]) return;
+            geocoder.geocode({address: destAddr}, function(rd, rs2){
+                if(rs2!=='OK' || !rd[0]) return;
+                drawRoute(ro[0].geometry.location, rd[0].geometry.location);
+                // place markers
+                new google.maps.Marker({position: ro[0].geometry.location, map: map, title:"Pickup"});
+                new google.maps.Marker({position: rd[0].geometry.location, map: map, title:"Destination"});
+            });
+        });
+    }
+
+    function drawRoute(from, to){
+        directionsService.route({
+            origin: from,
+            destination: to,
+            travelMode: google.maps.TravelMode.DRIVING
+        }, function(result, status){
+            if(status==='OK'){
+                directionsRenderer.setDirections(result);
+                var b = new google.maps.LatLngBounds();
+                b.extend(from); b.extend(to); map.fitBounds(b);
+            }
+        });
+    }
+
+    window.addEventListener('load', init);
+})();
+</script>

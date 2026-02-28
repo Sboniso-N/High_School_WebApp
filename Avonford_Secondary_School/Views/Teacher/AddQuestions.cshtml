@@ -1,0 +1,188 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.AddQuestionViewModel
+
+@{
+    ViewBag.Title = "Add Questions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Navigation Bar (Teacher) -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<nav class="navbar navbar-custom" style="background-color: #ff6600; border-radius: 0;">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/Teacher/Index" style="color: white;">Avonford Secondary - Teacher</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/Teacher/Index" style="color: white;">Dashboard</a></li>
+            <li><a href="/Teacher/CreateAssessment" style="color: white;">Create Assessment</a></li>
+            <li><a href="/Teacher/GradeAssessments" style="color: white;">Grade Assessments</a></li>
+            <li><a href="/Account/Logout" style="color: white;">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Page Styles -->
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background-color: #fff;
+        color: #222;
+    }
+
+    h2, h3 {
+        color: #ff6600;
+        margin-top: 30px;
+    }
+
+    .form-control {
+        border-radius: 4px;
+    }
+
+    .btn-primary, .btn-success, .btn-info {
+        border-radius: 4px;
+        padding: 8px 16px;
+    }
+
+    .btn-primary {
+        background-color: #ff6600;
+        border-color: #e65c00;
+    }
+
+        .btn-primary:hover {
+            background-color: #e65c00;
+        }
+
+    .panel-heading {
+        background-color: #ff6600 !important;
+        color: white !important;
+        font-weight: bold;
+    }
+
+    table th {
+        background-color: #f5f5f5;
+    }
+
+    hr {
+        border-color: #ccc;
+    }
+
+    .container-box {
+        padding: 30px;
+        background-color: #f9f9f9;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        margin-bottom: 40px;
+    }
+</style>
+
+<div class="container container-box">
+    <h2>Add Questions to: @Model.AssessmentName</h2>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @using (Html.BeginForm("AddQuestions", "Teacher", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.AssessmentID)
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.QuestionType)
+            @Html.DropDownListFor(m => m.QuestionType, new List<SelectListItem>
+            {
+                new SelectListItem { Text = "MCQ", Value = "MCQ" },
+                new SelectListItem { Text = "Text", Value = "Text" }
+            }, "Select Question Type", new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.QuestionType, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.QuestionText)
+            @Html.TextAreaFor(m => m.QuestionText, new { @class = "form-control", rows = "3" })
+            @Html.ValidationMessageFor(m => m.QuestionText, "", new { @class = "text-danger" })
+        </div>
+
+        if (Model.ShowMcqFields)
+        {
+            <hr />
+            <div style="margin-top: 20px;">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.OptionA)
+                    @Html.TextBoxFor(m => m.OptionA, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.OptionA, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.OptionB)
+                    @Html.TextBoxFor(m => m.OptionB, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.OptionB, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.OptionC)
+                    @Html.TextBoxFor(m => m.OptionC, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.OptionC, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.OptionD)
+                    @Html.TextBoxFor(m => m.OptionD, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.OptionD, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AnswerKey)
+                    @Html.TextBoxFor(m => m.AnswerKey, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.AnswerKey, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+
+        <div class="form-group" style="margin-top: 20px;">
+            <button type="submit" name="actionType" value="ShowMcq" class="btn btn-info">Add MCQ Options</button>
+            <button type="submit" name="actionType" value="Add" class="btn btn-primary">Add</button>
+            <button type="submit" name="actionType" value="Finish" class="btn btn-success">Finish</button>
+        </div>
+    }
+
+    <hr />
+
+    <h3>Existing Questions</h3>
+    @if (Model.ExistingQuestions != null && Model.ExistingQuestions.Count > 0)
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Type</th>
+                    <th>Question</th>
+                    <th>Options/Answer</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.ExistingQuestions.Count; i++)
+                {
+                    var q = Model.ExistingQuestions[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@q.QuestionType</td>
+                        <td>@q.QuestionText</td>
+                        <td>
+                            @if (q.QuestionType == "MCQ")
+                            {
+                                <p>A: @q.OptionA</p>
+                                <p>B: @q.OptionB</p>
+                                <p>C: @q.OptionC</p>
+                                <p>D: @q.OptionD</p>
+                                <p><strong>Correct: @q.AnswerKey</strong></p>
+                            }
+                            else
+                            {
+                                @:Text Answer
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No questions added yet.</p>
+    }
+</div>

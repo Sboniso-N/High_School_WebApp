@@ -1,0 +1,130 @@
+﻿@* ========================= Views/Book/BorrowReturnReview.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.BorrowVMs.AdminBorrowReviewVM
+@{
+    ViewBag.Title = "Review Return — " + Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .wrap{margin-top:16px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    @@media (max-width:1100px){.grid{grid-template-columns:1fr}}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;box-shadow:0 10px 24px rgba(0,0,0,.06);padding:18px}
+    .hdr{display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .chip{border-radius:999px;padding:3px 9px;background:#f1f5f9;color:#0f172a;font-size:12px}
+    .muted{color:#64748b}
+    .kv{display:flex;justify-content:space-between;margin:6px 0}
+    .total{font-size:20px;font-weight:800}
+    .thumbs{display:flex;gap:8px;flex-wrap:wrap}
+    .thumb{width:92px;height:92px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb}
+    .btn-accent{background:#ff6600;color:#fff;border:none}
+    .btn-accent:hover{background:#e65c00;color:#fff}
+</style>
+
+<div class="container wrap">
+    <div class="hdr">
+        <div>
+            <h3 style="margin:0">Review return: <span class="muted">@Model.Title</span></h3>
+            <div class="muted">Reservation #@Model.ReservationID • Borrower: @Model.BorrowerEmail</div>
+        </div>
+        <div>
+            <a class="btn btn-default" href="@Url.Action("BorrowReturns","Admin")">Back to queue</a>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h4 style="margin-top:0">Details</h4>
+
+            <div class="kv"><div>Start</div><div>@Model.StartAt.ToString("yyyy-MM-dd")</div></div>
+            <div class="kv"><div>Due</div><div>@(Model.DueAt?.ToString("yyyy-MM-dd") ?? "-")</div></div>
+            <div class="kv"><div>Returned</div><div>@(Model.ReturnAt?.ToString("yyyy-MM-dd HH:mm") ?? "—")</div></div>
+
+            <hr />
+            <div class="kv"><div>Usage days</div><div>@Model.UsageDays</div></div>
+            <div class="kv"><div>Late days</div><div>@Model.LateDays</div></div>
+            <div class="kv"><div>Fee/day</div><div>R @Model.FeePerDay.ToString("0.00")</div></div>
+            <div class="kv"><div>Late fee/day</div><div>R @Model.LateFeePerDay.ToString("0.00")</div></div>
+
+            <hr />
+            <div class="kv"><div>Borrow fee</div><div>R @Model.BorrowFeeFinal.ToString("0.00")</div></div>
+            <div class="kv"><div>Late fee</div><div>R @Model.LateFeeFinal.ToString("0.00")</div></div>
+            <div class="kv"><div>Damage fee</div><div>R <span id="damagePreview">@Model.DamageFee.ToString("0.00")</span></div></div>
+            <div class="kv total"><div>Total</div><div>R <span id="totalPreview">@Model.TotalDue.ToString("0.00")</span></div></div>
+
+            <hr />
+           
+
+            <div class="muted">Tip: Adjust damage fee if needed; totals update live for clarity. Approval will lock numbers and send the invoice to the student.</div>
+        </div>
+
+        <div class="card">
+            <h4 style="margin-top:0">Decision</h4>
+
+            @using (Html.BeginForm("BorrowReturnApprove", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.ReservationID)
+
+                <div class="form-group">
+                    <label for="DamageFee"><b>Damage fee (optional)</b></label>
+                    <input id="DamageFee" name="DamageFee" type="number" step="0.01" min="0" class="form-control"
+                           value="@Model.DamageFee.ToString("0.00")" />
+                    <small class="muted">Add only if the returned condition warrants it.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="AdminNote"><b>Admin note</b></label>
+                    <textarea id="AdminNote" name="AdminNote" class="form-control" rows="3"
+                              placeholder="Visible in audit & borrower notifications…">@Model.AdminNote</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-accent btn-block" style="width:100%;margin-bottom:10px">
+                    Approve & Issue Invoice
+                </button>
+            }
+
+            <hr />
+
+            @using (Html.BeginForm("BorrowReturnReject", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="reservationId" value="@Model.ReservationID" />
+                <div class="form-group">
+                    <label for="reason"><b>Reject reason</b></label>
+                    <textarea id="reason" name="reason" class="form-control" rows="2"
+                              placeholder="Explain why this is rejected…"></textarea>
+                </div>
+                <button type="submit" class="btn btn-default btn-block" style="width:100%">
+                    Reject Return
+                </button>
+            }
+
+            <hr />
+            <a class="btn btn-link" href="@Url.Action("BorrowReturns","Admin")">Back to queue</a>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+(function(){
+    // live total preview when damage changes
+    var damage = document.getElementById('DamageFee');
+    var dPrev  = document.getElementById('damagePreview');
+    var tPrev  = document.getElementById('totalPreview');
+    var baseTotal = @Model.TotalDue.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+    var currentDamage = @Model.DamageFee.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+
+    function upd(){
+        var val = parseFloat(damage.value || "0") || 0;
+        if(val < 0) val = 0;
+        dPrev.textContent = val.toFixed(2);
+        // recompute: (baseTotal - currentDamage) + newDamage
+        var baseMinus = parseFloat(baseTotal) - parseFloat(currentDamage);
+        var total = baseMinus + val;
+        tPrev.textContent = total.toFixed(2);
+    }
+    if(damage){ damage.addEventListener('input', upd); }
+})();
+    </script>
+}

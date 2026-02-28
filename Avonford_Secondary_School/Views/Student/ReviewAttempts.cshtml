@@ -1,0 +1,190 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.StudentAttemptReviewViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Review Your Attempts - " + Model.SubjectName;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #222;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+            .navbar-custom .navbar-brand,
+            .navbar-custom .navbar-nav > li > a {
+                color: #fff !important;
+                font-weight: bold;
+            }
+
+                .navbar-custom .navbar-nav > li > a:hover {
+                    color: #222 !important;
+                }
+
+        .dashboard-header {
+            background-image: url('../../Content/images/grade-12e3-fun-picture.jpg');
+            background-size: cover;
+            height: 250px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+            .dashboard-header .header-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
+                background: rgba(0, 0, 0, 0.6);
+            }
+
+            .dashboard-header .header-content {
+                position: relative;
+                z-index: 2;
+                text-align: center;
+                color: #fff;
+                padding-top: 80px;
+            }
+
+                .dashboard-header .header-content h1 {
+                    font-size: 38px;
+                    font-weight: bold;
+                }
+
+        .container-review {
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .panel {
+            margin-bottom: 20px;
+        }
+
+        .panel-heading {
+            background-color: #ff6600;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .attempt-header {
+            margin-bottom: 10px;
+        }
+
+        .answer-correct {
+            color: green;
+            font-weight: bold;
+        }
+
+        .answer-incorrect {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Student Navigation Bar -->
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Student/Index">Avonford - Student</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Student/Index">Dashboard</a></li>
+                <li><a href="/Student/SubjectAssessments">Subjects</a></li>
+                <li><a href="/Account/Logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <div class="header-overlay"></div>
+        <div class="header-content">
+            <h1>Review Your Attempts</h1>
+            <p>Subject: @Model.SubjectName</p>
+        </div>
+    </div>
+
+    <!-- Main Content Section -->
+    <div class="container container-review">
+        @if (Model.Attempts != null && Model.Attempts.Count > 0)
+        {
+            foreach (var attempt in Model.Attempts)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <strong>Attempt #@attempt.AttemptID</strong> &mdash;
+                        Started on: @attempt.AttemptStartTime.ToString("yyyy-MM-dd HH:mm")
+                        @(attempt.AttemptEndTime.HasValue ? (" | Submitted: " + attempt.AttemptEndTime.Value.ToString("yyyy-MM-dd HH:mm")) : "")
+                        <span class="pull-right">
+                            Score: @attempt.TotalScore / @attempt.MaxScore
+                        </span>
+                    </div>
+                    <div class="panel-body">
+                        @if (attempt.Answers != null && attempt.Answers.Count > 0)
+                        {
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Question</th>
+                                        <th>Your Answer</th>
+                                        <th>Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ans in attempt.Answers)
+                                    {
+                                        <tr>
+                                            <td>@ans.QuestionText</td>
+                                            <td>@ans.StudentAnswer</td>
+                                            <td>
+                                                @if (ans.IsCorrect)
+                                                {
+                                                    <span class="answer-correct">Correct</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="answer-incorrect">Incorrect</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p>No answers available.</p>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center">No attempts found for this subject.</p>
+        }
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

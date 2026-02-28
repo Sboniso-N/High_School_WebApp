@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Avonford_Secondary_School.Models.ViewModels.TutorClassListViewModel>
+@{
+    ViewBag.Title = "My Classes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+<div class="container">
+    <h2 class="text-center" style="color:#ff6600;">My Classes</h2>
+    <div class="text-right" style="margin-bottom:18px;">
+        <a href="@Url.Action("CreateClass","Tutor")" class="btn btn-lg btn-success"><i class="fa fa-plus"></i> New Class</a>
+    </div>
+    <table class="table table-hover table-striped" style="background:#fff;">
+        <thead>
+            <tr>
+                <th>Cover</th>
+                <th>Class</th>
+                <th>Grade</th>
+                <th>Subject</th>
+                <th>Mode</th>
+                <th>Enrolled</th>
+                <th>Capacity</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Manage</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@(string.IsNullOrEmpty(c.CoverImageBase64) ? "https://via.placeholder.com/70x55" : "data:image/jpeg;base64," + c.CoverImageBase64)"
+                             style="width:70px;height:55px;object-fit:cover;border-radius:8px;" />
+                    </td>
+                    <td>@c.ClassName</td>
+                    <td>@c.GradeName</td>
+                    <td>@c.SubjectName</td>
+                    <td>@c.Mode</td>
+                    <td>@c.Enrolled</td>
+                    <td>@c.Capacity</td>
+                    <td>
+                        @if (c.IsActive)
+                        {<span class="label label-success">Active</span> }
+                        else
+                        { <span class="label label-danger">Inactive</span>}
+                    </td>
+                    <td>@c.CreatedDate.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <a href="@Url.Action("ClassDetails","Tutor",new{id=c.TutorClassID})" class="btn btn-sm btn-primary"><i class="fa fa-cogs"></i> Manage</a>
+                        @if (c.IsActive)
+                        {
+                            <form method="post" action="@Url.Action("DeactivateClass","Tutor",new{id=c.TutorClassID})" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Archive this class?');"><i class="fa fa-archive"></i></button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

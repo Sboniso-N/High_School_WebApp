@@ -1,0 +1,39 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.PrivateSessionRequestVM
+@{
+    ViewBag.Title = "Book a Private Session";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4" style="max-width:600px;">
+    <h2>Book a Private Session</h2>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @using (Html.BeginForm("BookPrivateSession", "Student", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label for="SelectedSubjectID" class="form-label">Subject:</label>
+            @Html.DropDownListFor(m => m.SelectedSubjectID, Model.AvailableSubjects, "Select Subject", new { @class = "form-control", id = "subjectDropdown", required = "required" })
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Start Time:</label>
+                @Html.TextBoxFor(m => m.StartTime, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", type = "datetime-local", id = "startTimeInput", required = "required" })
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">End Time:</label>
+                @Html.TextBoxFor(m => m.EndTime, "{0:yyyy-MM-ddTHH:mm}", new { @class = "form-control", type = "datetime-local", id = "endTimeInput", required = "required" })
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Topic / Short Message (optional):</label>
+            @Html.TextAreaFor(m => m.TopicMessage, new { @class = "form-control", rows = 2 })
+        </div>
+        <div class="mb-3 text-end">
+            <button type="submit" class="btn btn-primary" id="findTutorsBtn">Find Available Tutors</button>
+        </div>
+    }
+</div>

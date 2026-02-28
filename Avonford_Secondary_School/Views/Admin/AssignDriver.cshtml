@@ -1,0 +1,184 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.AssignDriverVM
+@{
+    ViewBag.Title = "Assign Driver";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .driver-pick {
+        border: 1px solid #e3e7ef;
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+        .driver-pick.disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .driver-pick.active {
+            border-color: #2b90ef;
+            box-shadow: 0 0 0 3px rgba(43,144,239,.15);
+        }
+
+    .cap {
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+        .cap > span {
+            display: block;
+            height: 6px;
+            transition: width .3s ease;
+        }
+
+    .photo {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #f1f3f5;
+    }
+
+    .sticky-side {
+        position: sticky;
+        top: 12px;
+    }
+
+    .map-box {
+        border: 1px solid #e3e7ef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="panel panel-default sticky-side">
+            <div class="panel-heading"><strong>Order #@Model.OrderID</strong></div>
+            <div class="panel-body">
+                <div class="media">
+                    <div class="media-left">
+                        <img src="@(Model.MainImageBase64 != null ? ("data:image/*;base64," + Model.MainImageBase64) : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=")" class="img-thumbnail" style="width:96px;height:96px;object-fit:cover;" />
+                    </div>
+                    <div class="media-body">
+                        <div class="h4 m-t-0">@Model.BookTitle</div>
+                        <div class="text-muted small">@Model.Condition</div>
+                        <div class="small">Placed: @Model.OrderDate.ToString("yyyy-MM-dd HH:mm")</div>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="small text-muted">Buyer</div>
+                <div>@Model.BuyerName</div>
+                <div class="text-muted small">@Model.BuyerEmail</div>
+
+                <hr />
+                <div class="small text-muted">Deliver to</div>
+                <div class="m-b-5">@Model.DeliveryAddress</div>
+                <div class="map-box m-b-10">
+                    <iframe src="https://www.google.com/maps?q=@HttpUtility.UrlEncode(Model.DeliveryAddress)&output=embed"
+                            width="100%" height="220" frameborder="0" style="border:0;" allowfullscreen></iframe>
+                </div>
+
+                <div><strong>Total Delivery Fee:</strong> R @Model.DeliveryFee.ToString("0.00")</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <h3 class="m-t-0">Select a Driver</h3>
+        <div class="row m-b-10">
+            <div class="col-sm-7">
+                <input type="text" class="form-control" id="driverSearch" placeholder="Search driver…">
+            </div>
+        </div>
+
+        <div id="driverList">
+            @foreach (var d in Model.Drivers)
+            {
+                var pct = d.MaxDailyDeliveries > 0 ? (int)Math.Round((double)d.CapacityLeft / d.MaxDailyDeliveries * 100) : 0;
+                var bar = pct > 50 ? "#28a745" : pct > 0 ? "#ffc107" : "#dc3545";
+                <div class="driver-pick @(d.IsDisabled ? "disabled" : "")" data-name="@((d.Name??"").ToLower())" data-id="@d.DriverID" data-disabled="@d.IsDisabled" title="@d.DisabledReason">
+                    <div class="media">
+                        <div class="media-left">
+                            <img class="photo" src="@(d.PhotoBase64 != null ? ("data:image/*;base64," + d.PhotoBase64) : "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=")" />
+                        </div>
+                        <div class="media-body">
+                            <div class="h4 m-t-0">@d.Name <small class="text-muted">(@d.Status)</small></div>
+                            <div class="small text-muted">Today: @d.DeliveriesToday / @d.MaxDailyDeliveries</div>
+                            <div class="cap"><span style="width:@pct%; background:@bar"></span></div>
+                            @if (d.IsDisabled && !string.IsNullOrWhiteSpace(d.DisabledReason))
+                            {
+                                <div class="text-danger small m-t-5"><span class="glyphicon glyphicon-info-sign"></span> @d.DisabledReason</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @using (Html.BeginForm("AssignDriver", "Admin", FormMethod.Post, new { id = "assignForm" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("OrderID", Model.OrderID)
+            @Html.Hidden("DriverID", "")
+
+            <div class="row m-t-15">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>Expected delivery date (optional)</label>
+                        <input type="date" name="ExpectedDeliveryDate" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <label>Notes (optional)</label>
+                    <input type="text" name="Notes" class="form-control" placeholder="Leave at reception…" maxlength="300" />
+                </div>
+            </div>
+
+            <button class="btn btn-success" id="btnAssign" disabled>
+                <span class="glyphicon glyphicon-ok"></span> Confirm Assignment
+            </button>
+            <a class="btn btn-default" href="@Url.Action("OrdersAwaitingDriver","Admin")">Back</a>
+        }
+    </div>
+</div>
+
+@section scripts{
+    <script>
+    // filter drivers on page
+    $('#driverSearch').on('input', function(){
+        var q = $(this).val().toLowerCase();
+        $('#driverList .driver-pick').each(function(){
+            var name = $(this).data('name');
+            $(this).toggle(name.indexOf(q) !== -1);
+        });
+    });
+
+    // pick driver
+    var pickedId = null;
+    $('#driverList').on('click', '.driver-pick', function(){
+        if($(this).data('disabled') === true || $(this).hasClass('disabled')) return;
+        $('#driverList .driver-pick').removeClass('active');
+        $(this).addClass('active');
+        pickedId = $(this).data('id');
+        $('input[name="DriverID"]').val(pickedId);
+        $('#btnAssign').prop('disabled', false);
+    });
+
+    // submit UX
+    $('#assignForm').on('submit', function(){
+        if(!pickedId){ alert('Pick a driver first.'); return false; }
+        $('#btnAssign').prop('disabled', true).append(' <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span>');
+    });
+    </script>
+    <style>
+    .glyphicon-refresh-animate { animation: spin .7s linear infinite; }
+    @@keyframes spin { from{transform:rotate(0);} to{transform:rotate(360deg);} }
+    </style>
+}

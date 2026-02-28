@@ -1,0 +1,17 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.WithdrawalReceiptVM
+@{
+    ViewBag.Title = "Withdrawal Successful (Test)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container" style="max-width:680px;margin-top:24px">
+    <div class="panel panel-default" style="border-radius:12px">
+        <div class="panel-body" style="padding:20px 24px">
+            <h3 style="margin-top:0">Withdrawal successful (test)</h3>
+            <p>Amount: <strong>R @Model.Amount.ToString("0.00")</strong></p>
+            <p>New balance: <strong>R @Model.NewBalance.ToString("0.00")</strong></p>
+            <p class="text-muted">Processed: @Model.ProcessedAt.ToString("yyyy-MM-dd HH:mm")</p>
+            <p class="text-muted">@Model.Note</p>
+            <a class="btn btn-primary" href="@Url.Action("Wallet","Book")">Back to Wallet</a>
+        </div>
+    </div>
+</div>

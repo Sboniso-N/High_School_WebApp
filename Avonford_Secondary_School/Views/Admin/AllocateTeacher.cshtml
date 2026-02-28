@@ -1,0 +1,205 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TeacherAllocationViewModel
+
+@{
+    ViewBag.Title = "Allocate Teacher to Subjects";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #fff;
+            color: #222;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+            .navbar-custom .navbar-brand {
+                font-size: 24px;
+                font-weight: bold;
+                color: #fff !important;
+            }
+
+            .navbar-custom .navbar-nav > li > a {
+                color: #fff !important;
+                font-size: 16px;
+            }
+
+                .navbar-custom .navbar-nav > li > a:hover {
+                    color: #222 !important;
+                }
+
+        .admin-header {
+            background-image: url('../../Content/images/grade-12e3-fun-picture.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 250px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+            .admin-header .overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+            }
+
+            .admin-header .text {
+                position: relative;
+                z-index: 1;
+                color: white;
+                text-align: center;
+                padding-top: 80px;
+            }
+
+                .admin-header .text h1 {
+                    font-size: 38px;
+                    font-weight: bold;
+                }
+
+        .content-section {
+            padding: 40px 20px;
+        }
+
+        .form-control {
+            margin-bottom: 20px;
+        }
+
+        table {
+            background-color: #f9f9f9;
+        }
+
+        .btn-info {
+            background-color: #ff6600;
+            border-color: #ff6600;
+        }
+
+            .btn-info:hover {
+                background-color: #e65c00;
+                border-color: #e65c00;
+            }
+
+        h2.section-title {
+            margin-bottom: 30px;
+            font-weight: bold;
+            color: #ff6600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Navbar -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Admin/Index">Avonford Admin Panel</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Admin/PendingApplications">Pending Applications</a></li>
+                <li><a href="/Admin/RegisterTeacher">Register Teacher</a></li>
+                <li><a href="/Admin/AllocateTeacher">Allocate Teachers</a></li>
+                <li><a href="/Account/Logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="admin-header">
+        <div class="overlay"></div>
+        <div class="text">
+            <h1>Allocate Teacher to Subjects</h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container content-section">
+        <h2 class="section-title text-center">Select Grade &amp; Stream</h2>
+
+        @using (Html.BeginForm("AllocateTeacher", "Admin", FormMethod.Get))
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <label><strong>Select Grade:</strong></label>
+                    <select name="selectedGrade" class="form-control" onchange="this.form.submit()">
+                        <option value="8" @(Model.SelectedGrade == 8 ? "selected" : "")>Grade 8</option>
+                        <option value="9" @(Model.SelectedGrade == 9 ? "selected" : "")>Grade 9</option>
+                        <option value="10" @(Model.SelectedGrade == 10 ? "selected" : "")>Grade 10</option>
+                        <option value="11" @(Model.SelectedGrade == 11 ? "selected" : "")>Grade 11</option>
+                        <option value="12" @(Model.SelectedGrade == 12 ? "selected" : "")>Grade 12</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label><strong>Select Stream:</strong></label>
+                    <select name="selectedStreamID" class="form-control" onchange="this.form.submit()">
+                        @if (Model.SelectedGrade == 8 || Model.SelectedGrade == 9)
+                        {
+                            <option value="">Select Stream</option>
+                            <option value="@(Model.Streams.FirstOrDefault(s => s.StreamName == "A")?.StreamID)" @(Model.Streams.Any(s => s.StreamName == "A" && s.StreamID == Model.SelectedStreamID) ? "selected" : "")>A</option>
+                            <option value="@(Model.Streams.FirstOrDefault(s => s.StreamName == "B")?.StreamID)" @(Model.Streams.Any(s => s.StreamName == "B" && s.StreamID == Model.SelectedStreamID) ? "selected" : "")>B</option>
+                            <option value="@(Model.Streams.FirstOrDefault(s => s.StreamName == "C")?.StreamID)" @(Model.Streams.Any(s => s.StreamName == "C" && s.StreamID == Model.SelectedStreamID) ? "selected" : "")>C</option>
+                        }
+                        else if (Model.SelectedGrade >= 10)
+                        {
+                            foreach (var s in Model.Streams)
+                            {
+                                <option value="@s.StreamID" @(Model.SelectedStreamID == s.StreamID ? "selected" : "")>@s.StreamName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+
+        <hr />
+
+        <h2 class="section-title text-center">Subjects Allocation</h2>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Assigned Teacher</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Subjects)
+                {
+                    <tr>
+                        <td>@item.SubjectName</td>
+                        <td>@(string.IsNullOrEmpty(item.TeacherName) ? "None" : item.TeacherName)</td>
+                        <td>
+                            @Html.ActionLink("Assign/Change Teacher", "ChangeTeacher", "Admin",
+                                new
+                                {
+                                    gradeSubjectTeacherID = item.GradeSubjectTeacherID,
+                                    gradeID = item.GradeID,
+                                    streamID = item.StreamID,
+                                    subjectID = item.SubjectID
+                                },
+                                new { @class = "btn btn-sm btn-info" })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

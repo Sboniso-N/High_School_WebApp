@@ -1,0 +1,149 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.SubjectAssessmentsViewModel
+
+@{
+    ViewBag.Title = "Assessments for " + Model.SubjectName;
+    Layout = null; // Remove this if you already use _Layout.cshtml globally
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+            .navbar-custom .navbar-brand {
+                color: #fff !important;
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            .navbar-custom .navbar-nav > li > a {
+                color: #fff !important;
+                font-size: 16px;
+            }
+
+                .navbar-custom .navbar-nav > li > a:hover {
+                    color: #222 !important;
+                }
+
+        .container {
+            padding: 30px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .table {
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+            .table th {
+                background-color: #f0f0f0;
+                color: #333;
+                font-weight: bold;
+            }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-secondary {
+            background-color: #ccc;
+            border-color: #ccc;
+            color: #555;
+        }
+
+            .btn-secondary:disabled {
+                background-color: #e0e0e0;
+                color: #999;
+            }
+
+        .footer {
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Student/Index">Avonford Secondary School</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Student/Index">Dashboard</a></li>
+                <li><a href="/Account/Logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Assessments for @Model.SubjectName</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Assessment Name</th>
+                    <th>Type</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var assessment in Model.Assessments)
+                {
+                    <tr>
+                        <td>@assessment.AssessmentName</td>
+                        <td>@assessment.AssessmentType</td>
+                        <td>@assessment.AssessmentDate.ToString("yyyy-MM-dd")</td>
+                        <td>@assessment.StartTime.ToString(@"hh\:mm") - @assessment.EndTime.ToString(@"hh\:mm")</td>
+                        <td>
+                            @if (assessment.CanStartAttempt)
+                            {
+                                @Html.ActionLink("Start Attempt", "StartAttempt", "Student", new { assessmentId = assessment.AssessmentID }, new { @class = "btn btn-success" })
+                            }
+                            else if (assessment.AlreadyAttempted)
+                            {
+                                <button class="btn btn-secondary" disabled="disabled">Already Attempted</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" disabled="disabled">Not Open</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        &copy; @DateTime.Now.Year Avonford Secondary School. All rights reserved.
+    </div>
+
+</body>
+</html>

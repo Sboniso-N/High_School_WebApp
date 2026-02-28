@@ -1,0 +1,103 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.StudentTransferPreviewVM
+@{
+    ViewBag.Title = "Preview & Confirm Stream Transfer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container mt-5">
+    <h2 class="mb-3 text-primary"><i class="fas fa-eye"></i> Preview & Confirm Transfer</h2>
+    <div class="alert alert-info mb-4">
+        Please carefully review your transfer request before submission.<br />
+        Differences between your current and new stream are <span class="text-success font-weight-bold">highlighted</span>.
+    </div>
+    <div class="row">
+        <!-- Current Details -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white"><b>Current Details</b></div>
+                <div class="card-body">
+                    <p><b>Stream:</b> @Model.CurrentStream</p>
+                    <p><b>Grade:</b> @Model.CurrentGrade</p>
+                    <p><b>Subjects:</b></p>
+                    <ul>
+                        @foreach (var s in Model.CurrentSubjects)
+                        {
+                            if (!Model.NewSubjects.Contains(s))
+                            {
+                                <li class="text-danger">@s <i class="fas fa-minus-circle"></i></li>
+                            }
+                            else
+                            {
+                                <li>@s</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- New Details -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white"><b>Target Details</b></div>
+                <div class="card-body">
+                    <p><b>Stream:</b> <span class="font-weight-bold text-success">@Model.NewStream</span></p>
+                    <p><b>Grade:</b> @Model.NewGrade</p>
+                    <p><b>Subjects:</b></p>
+                    <ul>
+                        @foreach (var s in Model.NewSubjects)
+                        {
+                            if (!Model.CurrentSubjects.Contains(s))
+                            {
+                                <li class="text-success">@s <i class="fas fa-plus-circle"></i></li>
+                            }
+                            else
+                            {
+                                <li>@s</li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Middle: Justification & File -->
+        <div class="col-md-2 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white"><b>Other Details</b></div>
+                <div class="card-body">
+                    <b>Justification:</b>
+                    <div class="border rounded p-2 bg-light mb-2" style="min-height:60px;">@Model.Justification</div>
+                    @if (!string.IsNullOrEmpty(Model.SupportingDocumentName))
+                    {
+                        <b>Attachment:</b>
+                        <button class="btn btn-sm btn-outline-info mt-2" type="button" data-toggle="collapse" data-target="#collapseFile" aria-expanded="false" aria-controls="collapseFile">
+                            <i class="fas fa-file-pdf"></i> View PDF
+                        </button>
+                        <div class="collapse mt-2" id="collapseFile">
+                            <div class="alert alert-secondary">
+                                <i class="fas fa-info-circle"></i> The file will be included with your request.<br />
+                                <b>@Model.SupportingDocumentName</b>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        @using (Html.BeginForm("ConfirmTransferRequest", "Student", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-lg btn-success px-5">
+                <i class="fas fa-check-circle"></i> Submit Transfer Request
+            </button>
+        }
+    </div>
+</div>
+@section Scripts {
+    <script>
+        // Animate subject changes
+        $(function () {
+            $("li.text-danger").hide().fadeIn(800);
+            $("li.text-success").hide().fadeIn(800);
+        });
+    </script>
+}

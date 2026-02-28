@@ -1,0 +1,247 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TeacherTransferRequestReviewVM
+@{
+    ViewBag.Title = "Review & Approve Stream Transfer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        /* Progress bar stepper */
+        .stepper {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .stepper-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .stepper-circle {
+            width: 38px;
+            height: 38px;
+            line-height: 36px;
+            border-radius: 50%;
+            border: 3px solid #ddd;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 18px;
+            background: #fff;
+            color: #aaa;
+        }
+
+        .stepper-step.active .stepper-circle {
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+        .stepper-step.completed .stepper-circle {
+            border-color: #28a745;
+            background: #28a745;
+            color: #fff;
+        }
+
+        .stepper-label {
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        .stepper-bar {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            width: 100%;
+            height: 4px;
+            z-index: -1;
+            background: #ddd;
+        }
+
+        .stepper-step:last-child .stepper-bar {
+            display: none;
+        }
+
+        .stepper-step.completed ~ .stepper-step .stepper-bar {
+            background: #28a745;
+        }
+        /* Academic performance table */
+        .sortable:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .grade-pass {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .grade-fail {
+            color: #dc3545;
+            font-weight: bold;
+        }
+    </style>
+}
+
+<div class="container my-5">
+    <h2 class="mb-4 text-primary"><i class="fas fa-user-check"></i> Review Stream Transfer Request</h2>
+    <div class="mb-3">
+        <span class="badge badge-secondary p-2">Status: <b>@Model.Status</b></span>
+        @if (!string.IsNullOrEmpty(Model.ActionBlockedReason))
+        {
+            <span class="badge badge-danger ml-2"><i class="fas fa-ban"></i> @Model.ActionBlockedReason</span>
+        }
+    </div>
+    <!-- Stepper/Progress -->
+    <div class="stepper">
+        @{
+            string[] steps = { "Submitted", "PendingTeacher", "TeacherApproved", "TeacherRejected", "PendingAdmin", "AdminApproved", "AdminRejected" };
+            int currentStep = steps.ToList().IndexOf(Model.Status);
+        }
+        @for (int i = 0; i < steps.Length; i++)
+        {
+            var stepLabel = steps[i];
+            var cls = i < currentStep ? "completed" : i == currentStep ? "active" : "";
+            <div class="stepper-step @cls">
+                <div class="stepper-circle">@((i+1).ToString())</div>
+                <div class="stepper-label">@stepLabel.Replace("Teacher", "Teacher<br/>")</div>
+                <div class="stepper-bar"></div>
+            </div>
+        }
+    </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <b>Student & Request Details</b>
+        </div>
+        <div class="card-body">
+            <p>
+                <b>Student:</b> @Model.StudentName <span class="text-muted">(ID: @Model.StudentID)</span><br />
+                <b>Current:</b> Grade @Model.OldGrade (<b>@Model.OldStream</b>)<br />
+                <b>Requested:</b> Grade @Model.NewGrade (<b>@Model.NewStream</b>)
+            </p>
+            <b>Justification:</b>
+            <div class="alert alert-light border p-2 mb-2">@Model.Justification</div>
+            @if (Model.AttachmentFileID != null)
+            {
+                <b>Attachment:</b>
+                <a class="btn btn-sm btn-outline-secondary" target="_blank" href="@Url.Action("DownloadTransferAttachment", "Teacher", new { fileId = Model.AttachmentFileID })">
+                    <i class="fas fa-file-pdf text-danger"></i> @Model.AttachmentFileName
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Academic Performance Table -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-chart-bar"></i> Academic Performance (Current Subjects)</span>
+            <span class="text-white-50" style="font-size:0.95em;">Sortable</span>
+        </div>
+        <div class="card-body">
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th class="sortable" onclick="sortTable(0)">Subject <i class="fas fa-sort"></i></th>
+                        <th class="sortable" onclick="sortTable(1)">Grade <i class="fas fa-sort"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="gradesTable">
+                    @foreach (var g in Model.AcademicPerformance)
+                    {
+                        <tr>
+                            <td>@g.SubjectName</td>
+                            <td class="@(g.Grade >= 50 ? "grade-pass" : "grade-fail")">@g.Grade</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Action Panel -->
+    @using (Html.BeginForm("ReviewTransferRequest", "Teacher", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.TransferRequestID)
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white"><b>Teacher Decision</b></div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-6 mb-2">
+                        <label>
+                            <input type="radio" name="Action" value="Approve" id="actionApprove" @(Model.Action == "Approve" ? "checked" : "") />
+                            <span class="ml-1 text-success"><i class="fas fa-thumbs-up"></i> Approve</span>
+                        </label>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label>
+                            <input type="radio" name="Action" value="Reject" id="actionReject" @(Model.Action == "Reject" ? "checked" : "") />
+                            <span class="ml-1 text-danger"><i class="fas fa-thumbs-down"></i> Reject</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="approveMsg" class="small text-muted mb-2" style="display:none;">
+                    <i class="fas fa-info-circle text-info"></i> Approval comment required (min 50 chars, explain why student is suited to the new stream).
+                </div>
+                <div id="rejectMsg" class="small text-muted mb-2" style="display:none;">
+                    <i class="fas fa-exclamation-triangle text-danger"></i> Please provide a clear reason for rejection.
+                </div>
+                <textarea class="form-control mb-2" id="TeacherComment" name="TeacherComment" rows="4"
+                          maxlength="500"
+                          placeholder="Type your comment here..."
+                          oninput="updateCharCount(this)">@Model.TeacherComment</textarea>
+                <div class="d-flex justify-content-between">
+                    <span id="commentCounter" class="small text-muted">0/500</span>
+                    <span id="loadingSpinner" style="display:none;"><i class="fas fa-spinner fa-spin"></i> Processing...</span>
+                </div>
+                @Html.ValidationMessageFor(m => m.TeacherComment, "", new { @class = "text-danger" })
+                <div class="mt-3 text-center">
+                    <button type="submit" class="btn btn-lg btn-success px-4"
+                            id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Submit Decision
+                    </button>
+                    <a href="@Url.Action("TransferRequests", "Teacher")" class="btn btn-secondary ml-3">Back to Requests</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Table sort
+        function sortTable(col) {
+            let table = document.getElementById('gradesTable');
+            let rows = Array.from(table.rows);
+            rows.sort((a, b) => {
+                let A = a.cells[col].innerText.trim();
+                let B = b.cells[col].innerText.trim();
+                if (col === 1) { A = parseFloat(A); B = parseFloat(B); }
+                return A > B ? 1 : A < B ? -1 : 0;
+            });
+            for (let r of rows) table.appendChild(r);
+        }
+        // Radio/textarea logic
+        function updateCharCount(el) {
+            let len = el.value.trim().length;
+            document.getElementById('commentCounter').innerText = len + "/500";
+        }
+        $(function () {
+            updateCharCount(document.getElementById('TeacherComment'));
+            // Show/hide info messages
+            function toggleMsg() {
+                $("#approveMsg, #rejectMsg").hide();
+                if ($("#actionApprove").is(":checked")) $("#approveMsg").show();
+                if ($("#actionReject").is(":checked")) $("#rejectMsg").show();
+            }
+            $("input[name=Action]").on("change", toggleMsg);
+            toggleMsg();
+
+            // Spinner on submit
+            $("#submitBtn").closest("form").on("submit", function () {
+                $("#loadingSpinner").show();
+                $("#submitBtn").prop("disabled", true);
+            });
+        });
+    </script>
+}

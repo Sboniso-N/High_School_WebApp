@@ -1,0 +1,166 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorClassCreateViewModel
+
+@{
+    ViewBag.Title = "Create New Class";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+<style>
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .preview-img {
+        width: 140px;
+        height: 120px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid #ff6600;
+        margin-top: 10px;
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <h2 class="text-center" style="color:#ff6600;">Create a New Tutor Class</h2>
+    <hr />
+    @using (Html.BeginForm("CreateClass", "Tutor", FormMethod.Post, new { enctype = "multipart/form-data", id = "classForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+        <div class="row">
+            <div class="col-md-6 form-section">
+                <label>Grade <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(m => m.SelectedGradeID, Model.TutorGrades, "Select Grade", new { @class = "form-control", id = "gradeSelect" })
+                @Html.ValidationMessageFor(m => m.SelectedGradeID, "", new { @class = "text-danger" })
+
+                <label style="margin-top:18px;">Subject <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(m => m.SelectedSubjectID, Model.TutorSubjects, "Select Subject", new { @class = "form-control", id = "subjectSelect" })
+                @Html.ValidationMessageFor(m => m.SelectedSubjectID, "", new { @class = "text-danger" })
+
+                <label style="margin-top:18px;">Class Name <span class="text-danger">*</span></label>
+                @Html.TextBoxFor(m => m.ClassName, new { @class = "form-control", maxlength = 150, placeholder = "Class Name" })
+                @Html.ValidationMessageFor(m => m.ClassName, "", new { @class = "text-danger" })
+
+                <label style="margin-top:18px;">Class Description <span class="text-danger">*</span></label>
+                @Html.TextAreaFor(m => m.ClassDescription, new { @class = "form-control", rows = 4, maxlength = 1500, placeholder = "Detailed class description..." })
+                @Html.ValidationMessageFor(m => m.ClassDescription, "", new { @class = "text-danger" })
+
+                <div class="row" style="margin-top:18px;">
+                    <div class="col-xs-6">
+                        <label>Capacity <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.Capacity, new { @class = "form-control", type = "number", min = 1, max = 120 })
+                        @Html.ValidationMessageFor(m => m.Capacity, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-xs-6">
+                        <label>Annual Fee (ZAR) <span class="text-danger">*</span></label>
+                        @Html.TextBoxFor(m => m.AnnualFee, new { @class = "form-control", type = "number", step = "0.01" })
+                        @Html.ValidationMessageFor(m => m.AnnualFee, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 form-section">
+                <label>Cover Image <span style="color:gray;font-weight:normal;">(background)</span></label>
+                <input type="file" name="CoverImage" id="CoverImageInput" accept="image/*" class="form-control" />
+                <img id="coverImgPreview" class="preview-img" />
+
+                <label style="margin-top:18px;">Mode <span class="text-danger">*</span></label>
+                @Html.DropDownListFor(m => m.Mode, new List<SelectListItem>
+                {
+                    new SelectListItem{ Text="Online", Value="Online"},
+                    new SelectListItem{ Text="Physical", Value="Physical"},
+                    new SelectListItem{ Text="Blended", Value="Blended"}
+                }, "-- Select Mode --", new { @class = "form-control", id = "modeSelect" })
+                @Html.ValidationMessageFor(m => m.Mode, "", new { @class = "text-danger" })
+
+                <div id="locationSection" style="margin-top:18px; display:none;">
+                    <label>Location</label>
+                    @Html.TextBoxFor(m => m.Location, new { @class = "form-control", placeholder = "e.g. 21 Main St, City", id = "locationInput" })
+                    @Html.ValidationMessageFor(m => m.Location, "", new { @class = "text-danger" })
+                </div>
+
+                <label style="margin-top:18px;">Enrollment Deadline <span class="text-danger">*</span></label>
+                @Html.TextBoxFor(m => m.EnrollmentDeadline, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                @Html.ValidationMessageFor(m => m.EnrollmentDeadline, "", new { @class = "text-danger" })
+
+                <label style="margin-top:18px;">Entry Requirements</label>
+                @Html.TextBoxFor(m => m.EntryRequirements, new { @class = "form-control", maxlength = 255, placeholder = "e.g. Passed previous grade..." })
+                @Html.ValidationMessageFor(m => m.EntryRequirements, "", new { @class = "text-danger" })
+
+                <label style="margin-top:18px;">WhatsApp Contact</label>
+                @Html.TextBoxFor(m => m.WhatsAppContact, new { @class = "form-control", maxlength = 50, placeholder = "+27..." })
+                @Html.ValidationMessageFor(m => m.WhatsAppContact, "", new { @class = "text-danger" })
+
+                <label style="margin-top:18px;">Schedule Template</label>
+                @Html.TextBoxFor(m => m.ScheduleTemplate, new { @class = "form-control", maxlength = 255, placeholder = "e.g. Mon & Wed 16:00-17:00" })
+                @Html.ValidationMessageFor(m => m.ScheduleTemplate, "", new { @class = "text-danger" })
+
+                <label style="margin-top:18px;">Class Resources <small>(Upload multiple files)</small></label>
+                <input type="file" name="ClassResources" id="classResourcesInput" multiple class="form-control" />
+                <div id="resourceFileList" style="margin-top:10px;"></div>
+            </div>
+        </div>
+
+        <div class="text-center" style="margin-top:35px;">
+            <button type="submit" class="btn btn-lg btn-primary"><i class="fa fa-check-circle"></i> Review & Confirm Class</button>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $("#modeSelect").on("change", function () {
+        if ($(this).val() === "Physical" || $(this).val() === "Blended") {
+            $("#locationSection").show();
+        } else {
+            $("#locationSection").hide();
+        }
+    });
+
+    $("#CoverImageInput").on("change", function () {
+        if (this.files && this.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (evt) { $("#coverImgPreview").attr('src', evt.target.result).show(); }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+
+    $("#classResourcesInput").on("change", function () {
+        var files = this.files;
+        var html = "";
+        for (var i = 0; i < files.length; i++) {
+            html += "<li>" + files[i].name + "</li>";
+        }
+        $("#resourceFileList").html("<ul>" + html + "</ul>");
+    });
+
+    // Dependent subject dropdown logic
+    $("#gradeSelect").on("change", function () {
+        var gradeId = $(this).val();
+        if (!gradeId) {
+            $("#subjectSelect").html('<option value="">Select Subject</option>');
+            return;
+        }
+        $.getJSON('@Url.Action("GetSubjectsForGrade", "Tutor")', { gradeId: gradeId }, function (data) {
+            var options = '<option value="">Select Subject</option>';
+            $.each(data, function (i, item) {
+                options += '<option value="' + item.Value + '">' + item.Text + '</option>';
+            });
+            $("#subjectSelect").html(options);
+        });
+    });
+
+    // Google Places API autocomplete
+    function initAutocomplete() {
+        var input = document.getElementById('locationInput');
+        if (input) {
+            var autocomplete = new google.maps.places.Autocomplete(input, { types: ['geocode'] });
+        }
+    }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjAOTlvfmvmY2SGZSdR54_3LNda2B4xp0&libraries=places" async defer></script>
+}

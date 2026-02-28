@@ -1,0 +1,112 @@
+﻿@* ========================= Views/Book/BorrowReturns.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.BorrowVMs.AdminBorrowQueueVM
+@{
+    ViewBag.Title = "Borrow Returns — Queue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .wrap{margin-top:16px}
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+    @@media (max-width:992px){.kpis{grid-template-columns:1fr}}
+    .kpi{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;box-shadow:0 8px 20px rgba(0,0,0,.05)}
+    .kpi .n{font-size:22px;font-weight:800}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;box-shadow:0 8px 20px rgba(0,0,0,.05);padding:0;overflow:hidden}
+    .tbl{width:100%}
+    .tbl th,.tbl td{padding:10px 12px;border-bottom:1px solid #f1f5f9}
+    .tbl th{background:#f8fafc;font-weight:700;color:#334155}
+    .tbl tr:hover td{background:#fcfcff}
+    .chip{border-radius:999px;padding:3px 9px;background:#f1f5f9;color:#0f172a;font-size:12px}
+    .status-ReturnedPendingApproval{background:#fef9c3;color:#854d0e}
+    .muted{color:#64748b}
+    .tools{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+    .tools input{max-width:260px}
+</style>
+
+<div class="container wrap">
+    <h3 style="margin-top:4px">Borrow returns awaiting approval</h3>
+
+    <div class="kpis">
+        <div class="kpi">
+            <div class="muted">Total pending</div>
+            <div class="n">@Model.TotalPending</div>
+        </div>
+        <div class="kpi">
+            <div class="muted">Oldest due first</div>
+            <div class="n">Queue view</div>
+        </div>
+        <div class="kpi">
+            <div class="muted">Tip</div>
+            <div>Open the top item, review photos, approve → invoice auto-sent.</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="tools" style="padding:12px">
+            <input type="text" id="q" class="form-control" placeholder="Search by title or borrower email…" />
+            <span class="muted">(@Model.Items.Count item@(Model.Items.Count==1?"":"s"))</span>
+        </div>
+        <div style="overflow:auto">
+            <table class="tbl" id="queue">
+                <thead>
+                    <tr>
+                        <th>Res #</th>
+                        <th>Book</th>
+                        <th>Borrower</th>
+                        <th>Start</th>
+                        <th>Due</th>
+                        <th>Returned</th>
+                        <th>Est days</th>
+                        <th>Est late</th>
+                        <th>Fee/day</th>
+                        <th>Late/day</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.Items)
+                    {
+                        <tr data-key="@( (r.Title ?? "") + " " + (r.BorrowerEmail ?? "") )">
+                            <td>#@r.ReservationID</td>
+                            <td>@r.Title</td>
+                            <td>
+                                @r.BorrowerEmail
+                                <div class="muted">UID @r.BorrowerUserID</div>
+                            </td>
+                            <td>@r.StartAt.ToString("yyyy-MM-dd")</td>
+                            <td>@(r.DueAt?.ToString("yyyy-MM-dd") ?? "-")</td>
+                            <td>@(r.ReturnAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
+                            <td class="muted">@r.EstUsageDays</td>
+                            <td class="muted">@r.EstLateDays</td>
+                            <td>R @r.FeePerDay.ToString("0.00")</td>
+                            <td>R @r.LateFeePerDay.ToString("0.00")</td>
+                            <td><span class="chip status-@r.Status.Replace(" ","")">@r.Status</span></td>
+                            <td>
+                                <a class="btn btn-primary btn-sm"
+                                   href="@Url.Action("BorrowReturnReview","Admin", new { reservationId = r.ReservationID })">
+                                    Review
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+(function(){
+    var q = document.getElementById('q');
+    var rows = [...document.querySelectorAll('#queue tbody tr')];
+    q.addEventListener('input', function(){
+        var term = q.value.trim().toLowerCase();
+        rows.forEach(tr=>{
+            var k = (tr.getAttribute('data-key')||'').toLowerCase();
+            tr.style.display = k.indexOf(term) >= 0 ? '' : 'none';
+        });
+    });
+})();
+    </script>
+}

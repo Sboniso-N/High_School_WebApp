@@ -1,0 +1,210 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.ApplicationDetailsViewModel
+
+@{
+    ViewBag.Title = "Application Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 60px;
+        }
+
+        .navbar-custom {
+            background-color: #ff6600;
+            border-radius: 0;
+            margin-bottom: 0;
+        }
+
+            .navbar-custom .navbar-brand,
+            .navbar-custom .navbar-nav > li > a {
+                color: #fff !important;
+                font-weight: bold;
+            }
+
+                .navbar-custom .navbar-nav > li > a:hover {
+                    color: #222 !important;
+                }
+
+        .container-boxed {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+
+        h2 {
+            color: #ff6600;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .btn-success, .btn-danger {
+            margin-right: 10px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .checkbox {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Admin Navigation -->
+    <nav class="navbar navbar-custom">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Admin/Index">Avonford Admin</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/Admin/PendingApplications">Pending Applications</a></li>
+                <li><a href="/Admin/RegisterTeacher">Register Teacher</a></li>
+                <li><a href="/Admin/AllocateTeacher">Allocate Teachers</a></li>
+                <li><a href="/Account/Logout">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container container-boxed">
+        <h2>Application Details</h2>
+
+        <p><strong>Ref:</strong> @Model.UniqueAppRef</p>
+        <p><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+        <p><strong>Nationality ID:</strong> @Model.NationalityID</p>
+        <p><strong>Date of Birth:</strong> @Model.DateOfBirth</p>
+        <p><strong>Parent Name:</strong> @Model.ParentName</p>
+        <p><strong>Parent ID:</strong> @Model.ParentID</p>
+        <p><strong>Parent Email:</strong> @Model.ParentEmail</p>
+        <p><strong>Parent Contact:</strong> @Model.ParentContact</p>
+        <p><strong>Grade:</strong> @Model.SelectedGrade</p>
+        <p><strong>Stream:</strong> @Model.SelectedStream</p>
+        <p><strong>Application Status:</strong> @Model.ApplicationStatus</p>
+        <p><strong>Date Applied:</strong> @Model.CreatedDate.ToString("yyyy-MM-dd HH:mm")</p>
+
+        <hr />
+
+        <h4>Capacity Info</h4>
+        <p>
+            Currently Enrolled: @Model.CurrentEnrolled <br />
+            Maximum Capacity: @Model.MaxCapacity <br />
+            @if (Model.IsCapacityFull)
+            {
+                <span class="text-danger"><strong>No Space Available!</strong></span>
+            }
+        </p>
+
+        <hr />
+
+        <h4>Documents</h4>
+        <ul>
+            <li>
+                Student ID Doc:
+                @if (Model.StudentIDDoc != null)
+                {
+                    @Html.ActionLink("View Document", "ViewDocument", "Admin", new { id = Model.ApplicationID, docType = "StudentIDDoc" }, new { target = "_blank" })
+                }
+                else
+                {
+                    @:N/A
+                }
+            </li>
+            <li>
+                Parent ID Doc:
+                @if (Model.ParentIDDoc != null)
+                {
+                    @Html.ActionLink("View Document", "ViewDocument", "Admin", new { id = Model.ApplicationID, docType = "ParentIDDoc" }, new { target = "_blank" })
+                }
+                else
+                {
+                    @:N/A
+                }
+            </li>
+            <li>
+                Previous Report Card:
+                @if (Model.PreviousReportCard != null)
+                {
+                    @Html.ActionLink("View Document", "ViewDocument", "Admin", new { id = Model.ApplicationID, docType = "PreviousReportCard" }, new { target = "_blank" })
+                }
+                else
+                {
+                    @:N/A
+                }
+            </li>
+            <li>
+                Application Form:
+                @if (Model.ApplicationForm != null)
+                {
+                    @Html.ActionLink("View Document", "ViewDocument", "Admin", new { id = Model.ApplicationID, docType = "ApplicationForm" }, new { target = "_blank" })
+                }
+                else
+                {
+                    @:N/A
+                }
+            </li>
+        </ul>
+
+        <hr />
+
+        @if (Model.ApplicationStatus == "Pending")
+        {
+            <h4>Admin Decision</h4>
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            using (Html.BeginForm("AdmitApplication", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.ApplicationID)
+                @Html.HiddenFor(m => m.IsCapacityFull)
+
+                <div class="checkbox">
+                    <label>
+                        @Html.CheckBoxFor(m => m.MeetsGradeCriteria) Meets Grade Entry Criteria
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        @Html.CheckBoxFor(m => m.IdentityVerified) Identity Verified
+                    </label>
+                </div>
+                <div class="checkbox">
+                    <label>
+                        @Html.CheckBoxFor(m => m.NoConcerns) No Concerns
+                    </label>
+                </div>
+
+                <input type="submit" value="Admit Student" class="btn btn-success" @(Model.IsCapacityFull ? "disabled='disabled'" : "") />
+            }
+
+            using (Html.BeginForm("RejectApplication", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="applicationId" value="@Model.ApplicationID" />
+                <input type="submit" value="Reject Application" class="btn btn-danger" />
+            }
+        }
+        else
+        {
+            <p><strong>This application is already @Model.ApplicationStatus.</strong></p>
+        }
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

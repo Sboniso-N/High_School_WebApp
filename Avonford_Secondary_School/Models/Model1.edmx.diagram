@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="acd63fe9b5504475bfa12c5766e36d9c" Name="Diagram1">
+        <EntityTypeShape EntityType="HighschoolDbModel.Application" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.AppSetting" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.AssessmentAttemptAnswer" Width="1.5" PointX="13.5" PointY="76.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.AssessmentAttempt" Width="1.5" PointX="5.25" PointY="71.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.AssessmentQuestion" Width="1.5" PointX="18.5" PointY="54.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Assessment" Width="1.5" PointX="16.25" PointY="58.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BookImage" Width="1.5" PointX="5.25" PointY="60.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BookOrder" Width="1.5" PointX="5.25" PointY="64.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BooksForSale" Width="1.5" PointX="3" PointY="59.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BorrowAuditLog" Width="1.5" PointX="10.5" PointY="57.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BorrowExtension" Width="1.5" PointX="13.5" PointY="62.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BorrowInvoiceLine" Width="1.5" PointX="15.75" PointY="55.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BorrowInvoice" Width="1.5" PointX="13.5" PointY="57.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BorrowReminder" Width="1.5" PointX="10.5" PointY="91.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BorrowReservationPhoto" Width="1.5" PointX="16.5" PointY="63.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.BorrowReservation" Width="1.5" PointX="8.25" PointY="60.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.DamageReportImage" Width="1.5" PointX="18.75" PointY="67.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.DamageReport" Width="1.5" PointX="16.5" PointY="67.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.DamageSeverityPolicy" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.DriverAssignment" Width="1.5" PointX="13.5" PointY="72.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.DriverAvailabilityLog" Width="1.5" PointX="5.25" PointY="89.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.DriverLocationLog" Width="1.5" PointX="5.25" PointY="92.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Driver" Width="1.5" PointX="3" PointY="74.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.ForumPost" Width="1.5" PointX="17" PointY="84.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.ForumThread" Width="1.5" PointX="14.75" PointY="84.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Grade" Width="1.5" PointX="17" PointY="50.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.GradeSubject" Width="1.5" PointX="19.25" PointY="48.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.GradeSubjectTeacher" Width="1.5" PointX="19.25" PointY="63" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.LossCas" Width="1.5" PointX="10.5" PointY="94.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Notification" Width="1.5" PointX="15.75" PointY="70.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.ReturnImage" Width="1.5" PointX="9.75" PointY="53.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Return" Width="1.5" PointX="7.5" PointY="54.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.ReturnsAuditLog" Width="1.5" PointX="9.75" PointY="50" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.SessionAttendance" Width="1.5" PointX="5.25" PointY="76" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.SessionFeedback" Width="1.5" PointX="8.25" PointY="74.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.SessionReminder" Width="1.5" PointX="8.25" PointY="69.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Stream" Width="1.5" PointX="17" PointY="47.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Student" Width="1.5" PointX="3" PointY="67.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.StudentTransferRequest" Width="1.5" PointX="5.25" PointY="82.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Subject" Width="1.5" PointX="8.75" PointY="45.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TeacherAllocationHistory" Width="1.5" PointX="19.25" PointY="58.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Teacher" Width="1.5" PointX="11" PointY="62.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TransferRequestAuditLog" Width="1.5" PointX="7.5" PointY="81" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TransferRequestFile" Width="1.5" PointX="7.5" PointY="84.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TransferRequestTimetablePreview" Width="1.5" PointX="7.5" PointY="88" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TutorClassEnrollment" Width="1.5" PointX="11.25" PointY="68.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TutorClass" Width="1.5" PointX="10.25" PointY="84.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TutorClassExitHistory" Width="1.5" PointX="13.5" PointY="68.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TutorClassForum" Width="1.5" PointX="12.5" PointY="84.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TutorClassResource" Width="1.5" PointX="12.5" PointY="80.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TutorGradeSubject" Width="1.5" PointX="11.25" PointY="75.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TutorPrivateBooking" Width="1.5" PointX="10.25" PointY="78.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.Tutor" Width="1.5" PointX="3" PointY="80.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.TutorSession" Width="1.5" PointX="16.5" PointY="77.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.User" Width="1.5" PointX="0.75" PointY="63.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.UserWallet" Width="1.5" PointX="3" PointY="85.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.WalletTransaction" Width="1.5" PointX="3" PointY="88" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.UserBalance" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.UserCreditsLog" Width="1.5" PointX="4.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.vwBorrowActive" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.vwBorrowOverdue" Width="1.5" PointX="0.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HighschoolDbModel.vwOrdersAwaitingDriver" Width="1.5" PointX="6.75" PointY="4.75" IsExpanded="true" />
+        <AssociationConnector Association="HighschoolDbModel.FK_AttemptAnswers_Attempt" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_AttemptAnswers_Question" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_AssessmentAttempts_Assessments" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_AssessmentAttempts_Students" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_AssessmentQuestions_Assessments" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Assessments_Subjects" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Assessments_Teachers" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BookImages_Book" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Assign_Order" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BookOrders_Book" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BookOrders_Buyer" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BookOrders_Driver" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BookOrders_Seller" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Notifications_Order" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Return_Order" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BooksForSale_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowRes_Book" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowAudit_Res" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowExt_Res" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowExt_User" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowInvLine_Inv" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowInv_Res" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowInv_User" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Notif_BorrowInv" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowRem_Res" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowPhotos_Res" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowPhotos_User" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowRes_Borrower" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_BorrowRes_Lender" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Dmg_Res" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Loss_Res" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Notif_BorrowRes" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_DmgImg_Report" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Dmg_User" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Assign_ByUser" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Assign_Driver" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_DriverAvail_Driver" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_DriverLoc_Driver" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Post_Thread" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Thread_Forum" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_GradeSubjects_Grades" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_GST_Grades" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_PrivateBook_Grade" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TeacherAllocationHistory_Grade" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TGS_Grade" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorClass_Grade" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorSession_Grade" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_GradeSubjects_Streams" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_GradeSubjects_Subjects" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_GST_Streams" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_GST_Subjects" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_GST_Teachers" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Notifications_TransferRequest" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Notifications_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_ReturnImages_Return" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Return_Buyer" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Return_Seller" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_ReturnsAudit_Return" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Attend_Booking" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Attend_Session" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Attend_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Attend_Tutor" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Feedback_Booking" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Feedback_Session" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Feedback_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Feedback_Tutor" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Reminder_Session" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Reminder_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TeacherAllocationHistory_Stream" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_ExitHistory_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_PrivateBook_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Students_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TransferRequests_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorClassEnroll_Student" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TransferAudit_Request" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TransferFile_Request" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TransferTimetable_Request" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_PrivateBook_Subject" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TeacherAllocationHistory_Subject" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Teachers_SubjectID1" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Teachers_SubjectID2" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Teachers_SubjectID3" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TGS_Subject" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorClass_Subject" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorSession_Subject" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TeacherAllocationHistory_Teacher" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Teachers_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_ExitHistory_Enroll" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorClassEnroll_Class" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_ExitHistory_Class" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Forum_Class" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorClass_Tutor" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorClassResource_Class" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorSession_Class" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TGS_Tutor" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_PrivateBook_Tutor" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_Tutors_Users" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_TutorSession_Tutor" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_UserWallets_User" ManuallyRouted="false" />
+        <AssociationConnector Association="HighschoolDbModel.FK_WalletTx_User" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

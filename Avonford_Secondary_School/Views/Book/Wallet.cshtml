@@ -1,0 +1,305 @@
+﻿@* ========================= Views/Book/Wallet.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.SellerWalletVM
+@{
+    ViewBag.Title = "My Wallet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var maxWithdraw = Model.AvailableBalance;
+}
+<style>
+    .panelish {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 8px 20px rgba(0,0,0,.05)
+    }
+
+    .amount {
+        font-size: 30px;
+        font-weight: 800;
+    }
+
+    .pos {
+        color: #2e7d32
+    }
+
+    .neg {
+        color: #c62828
+    }
+
+    .btn-accent {
+        background: #ff6600;
+        color: #fff;
+        border: none;
+    }
+
+        .btn-accent:hover {
+            background: #e65c00;
+            color: #fff;
+        }
+
+    .fade-in {
+        opacity: 0;
+        transform: translateY(8px);
+        transition: all .3s ease;
+    }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: none;
+        }
+
+    /* chips */
+    .chip {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ffe8d9;
+        color: #b34700;
+        cursor: pointer;
+        margin: 2px 4px;
+        font-size: 12px;
+    }
+
+        .chip:hover {
+            background: #ffd9bf;
+        }
+
+    /* toast */
+    .wallet-toast {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        background: #2e7d32;
+        color: #fff;
+        border-radius: 12px;
+        padding: 10px 14px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.18);
+        opacity: 0;
+        transform: translateY(8px) scale(.98);
+        animation: toastPop .35s ease forwards;
+        z-index: 9999;
+    }
+
+        .wallet-toast.error {
+            background: #c62828;
+        }
+
+    @@keyframes toastPop {
+        from {
+            opacity: 0;
+            transform: translateY(8px) scale(.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    /* modal (force readable) */
+    .modal-content {
+        border-radius: 16px;
+    }
+
+    .modal-header {
+        border-bottom: none;
+    }
+
+    .modal-title {
+        font-weight: 700;
+    }
+</style>
+
+<div class="container" style="margin-top:15px">
+
+    @if (TempData["WalletToast"] != null)
+    {<div class="wallet-toast">@TempData["WalletToast"]</div>}
+    @if (TempData["WalletError"] != null)
+    {<div class="wallet-toast error">@TempData["WalletError"]</div>}
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panelish">
+                <h4 class="accent" style="margin-top:0">Available Balance</h4>
+                <div class="amount">R @Model.AvailableBalance.ToString("0.00")</div>
+                <div class="text-muted">On hold: R @Model.PendingHoldBalance.ToString("0.00")</div>
+
+                <div class="btn-group" style="margin-top:12px;">
+                    <button class="btn btn-accent btn-sm" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                        <span class="glyphicon glyphicon-export"></span> Withdraw
+                    </button>
+                </div>
+
+                <hr />
+
+                <h5 class="accent" style="margin-top:0">Top up wallet</h5>
+                @using (Html.BeginForm("StartTopUp", "Book", FormMethod.Post, new { id = "topUpForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="input-group" style="margin-bottom:8px">
+                        <span class="input-group-addon">R</span>
+                        <input type="number" class="form-control" id="topupAmount" name="amount" min="10" step="1" placeholder="Enter amount (min R10)" required />
+                    </div>
+                    <div style="margin-bottom:8px">
+                        <span class="chip" data-v="50">R50</span>
+                        <span class="chip" data-v="100">R100</span>
+                        <span class="chip" data-v="200">R200</span>
+                        <span class="chip" data-v="500">R500</span>
+                    </div>
+                    <button type="submit" class="btn btn-accent btn-sm">
+                        <span class="glyphicon glyphicon-credit-card"></span> Top up with Card
+                    </button>
+                    <div class="help-block" style="margin-top:6px">
+                        You’ll be redirected to a secure Stripe Checkout page. When done, you’ll land back here.
+                    </div>
+                }
+
+                <hr />
+                <button id="exportCsv" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-download-alt"></span> Export CSV
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="panelish">
+                <h4 class="accent" style="margin-top:0">Recent Activity</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead><tr><th>Date</th><th>Reason</th><th>Direction</th><th class="text-right">Amount</th></tr></thead>
+                        <tbody id="txBody">
+                            @foreach (var t in Model.Transactions)
+                            {
+                                <tr class="fade-in">
+                                    <td>@t.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                    <td>@t.Reason</td>
+                                    <td>@t.Direction</td>
+                                    <td class="text-right @(t.Direction=="Credit"?"pos":"neg")">
+                                        @(t.Direction=="Credit" ? "+" : "-") R @t.Amount.ToString("0.00")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* -------- Withdraw Modal (Stripe test-mode) -------- *@
+<div class="modal fade" id="withdrawModal" tabindex="-1" aria-hidden="true" aria-labelledby="withdrawTitle">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="withdrawTitle">Withdraw funds</h4>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close" style="background:none;border:none;font-size:28px;line-height:1;">×</button>
+            </div>
+
+            @using (Html.BeginForm("StartWithdrawal", "Book", FormMethod.Post, new { id = "withdrawForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="input-group" style="margin-bottom:8px">
+                        <span class="input-group-addon">R</span>
+                        <input type="number"
+                               class="form-control"
+                               id="withdrawAmount"
+                               name="amount"
+                               min="1"
+                               max="@maxWithdraw.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)"
+                               step="1"
+                               placeholder="Amount to withdraw"
+                               required />
+                    </div>
+                    <div class="small text-muted">
+                        Test-only: a mock Stripe withdrawal flow will run; no real funds move.
+                    </div>
+                    <div style="margin-top:8px;">
+                        <span class="chip" data-wv="50">R50</span>
+                        <span class="chip" data-wv="100">R100</span>
+                        <span class="chip" data-wv="200">R200</span>
+                        <span class="chip" data-wv="@Math.Floor((double)maxWithdraw)">All</span>
+                    </div>
+                    <input type="hidden" name="testMode" value="true" />
+                </div>
+                <div class="modal-footer" style="border-top:none;">
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-accent">
+                        <span class="glyphicon glyphicon-ok"></span> Proceed
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+(function () {
+    // animate rows
+    const rows = document.querySelectorAll('#txBody .fade-in');
+    rows.forEach((r, i) => setTimeout(() => r.classList.add('show'), 40 * i));
+
+    // export CSV client-side
+    const exportBtn = document.getElementById('exportCsv');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            const lines = [['Date','Reason','Direction','Amount']];
+            document.querySelectorAll('#txBody tr').forEach(r=>{
+                const cells=[...r.children].map(td=>td.innerText.replace(/[\r\n]+/g,' ').trim());
+                lines.push(cells);
+            });
+            const csv = lines.map(a=>a.map(v=>`"${v.replace(/"/g,'""')}"`).join(',')).join('\r\n');
+            const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+            const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='wallet-transactions.csv'; a.click();
+        });
+    }
+
+    // top-up quick chips
+    document.querySelectorAll('.chip[data-v]').forEach(c=>{
+        c.addEventListener('click',()=>{
+            const v=c.getAttribute('data-v');
+            const input=document.getElementById('topupAmount');
+            input.value=v;
+            input.dispatchEvent(new Event('input',{bubbles:true}));
+            c.style.transform='scale(0.98)'; setTimeout(()=>c.style.transform='',100);
+        });
+    });
+
+    // withdraw chips
+    const maxAvail = @Model.AvailableBalance.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+    document.querySelectorAll('.chip[data-wv]').forEach(c=>{
+        c.addEventListener('click',()=>{
+            let v=c.getAttribute('data-wv');
+            if (v === 'All') v = maxAvail;
+            const input=document.getElementById('withdrawAmount');
+            input.value=v;
+            input.dispatchEvent(new Event('input',{bubbles:true}));
+            c.style.transform='scale(0.98)'; setTimeout(()=>c.style.transform='',100);
+        });
+    });
+
+    // validation guards
+    const topForm = document.getElementById('topUpForm');
+    topForm.addEventListener('submit', function(e){
+        const v=parseFloat(document.getElementById('topupAmount').value||'0');
+        if(isNaN(v)||v<10){ e.preventDefault(); alert('Please enter at least R10.'); return false; }
+    });
+
+    const wdForm = document.getElementById('withdrawForm');
+    wdForm.addEventListener('submit', function(e){
+        const val = parseFloat(document.getElementById('withdrawAmount').value||'0');
+        if(isNaN(val) || val <= 0){ e.preventDefault(); alert('Enter a valid withdrawal amount.'); return false; }
+        if(val > maxAvail){ e.preventDefault(); alert('Amount exceeds available balance.'); return false; }
+    });
+
+    // auto-hide toast
+    const toast = document.querySelector('.wallet-toast');
+    if (toast) {
+        setTimeout(()=>{ toast.style.transition='opacity .4s'; toast.style.opacity='0'; setTimeout(()=>toast.remove(),400); }, 4200);
+    }
+})();
+    </script>
+}

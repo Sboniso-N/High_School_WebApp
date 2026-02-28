@@ -1,0 +1,46 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.StudentFindClassesListVM
+@{
+    ViewBag.Title = "Find Tutor Classes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <h2>Available Tutor Classes</h2>
+    <input type="text" class="form-control mb-3" id="searchBox" placeholder="Live search for a class...">
+    <div class="row" id="classList">
+        @foreach (var c in Model.UnpaidClasses)
+        {
+            <div class="col-md-4 mb-4 class-card" data-name="@c.ClassName.ToLower()" data-subject="@c.SubjectName.ToLower()" data-tutor="@c.TutorName.ToLower()">
+                <div class="card shadow h-100">
+                    <img src="@(c.CoverImageBase64 != null ? "data:image/jpeg;base64," + c.CoverImageBase64 : "/Content/img/no-class-image.png")" class="card-img-top" style="height:180px;object-fit:cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@c.ClassName</h5>
+                        <p class="card-text mb-0"><b>Subject:</b> @c.SubjectName</p>
+                        <p class="card-text mb-0"><b>Grade:</b> @c.GradeName</p>
+                        <p class="card-text mb-0"><b>Tutor:</b> @c.TutorName</p>
+                        <p class="card-text mb-1"><b>Fee:</b> R @c.AnnualFee.ToString("F2")</p>
+                        <span class="badge bg-warning">Slots Left: @(c.Capacity - c.Enrolled)</span>
+                        <a href="@Url.Action("ClassDetails", "Student", new { classId = c.TutorClassID })" class="btn btn-outline-primary mt-2 w-100">View Details</a>
+                        <a href="@Url.Action("PayForClass", "Student", new { classId = c.TutorClassID })" class="btn btn-success mt-2 w-100">Pay & Join</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $("#searchBox").on("input", function () {
+            var term = $(this).val().toLowerCase();
+            $(".class-card").each(function () {
+                var name = $(this).data("name");
+                var subj = $(this).data("subject");
+                var tutor = $(this).data("tutor");
+                if (name.includes(term) || subj.includes(term) || tutor.includes(term)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    </script>
+}

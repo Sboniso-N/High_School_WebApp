@@ -1,0 +1,87 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.RegisterTutorViewModel
+
+@{
+    ViewBag.Title = "Confirm Tutor Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="max-width:900px;">
+    <h2 class="text-center" style="color:#ff6600;">Confirm Tutor Details</h2>
+    <div class="row" style="margin-bottom:30px;">
+        <div class="col-md-3 text-center">
+            <img src="@( !string.IsNullOrEmpty(Model.ProfilePicBase64)
+                        ? "data:image/jpeg;base64," + Model.ProfilePicBase64
+                        : "https://via.placeholder.com/120")"
+                 class="img-preview"
+                 style="width:120px; height:120px; border-radius:60px; object-fit:cover; border:2px solid #ff6600; margin-bottom:10px;" />
+            <br /><strong>@Model.FirstName @Model.LastName</strong>
+        </div>
+        <div class="col-md-9">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Email</th>
+                    <td>@Model.Email</td>
+                </tr>
+                <tr>
+                    <th>Phone</th>
+                    <td>@Model.Phone</td>
+                </tr>
+                <tr>
+                    <th>Qualifications</th>
+                    <td>@Model.Qualifications</td>
+                </tr>
+                <tr>
+                    <th>Bio</th>
+                    <td>@Model.Bio</td>
+                </tr>
+                <tr>
+                    <th>Assigned Grades & Subjects</th>
+                    <td>
+                        @foreach (var kv in Model.SelectedSubjectsPerGrade)
+                        {
+                            <div>
+                                <strong>@Model.GradeList.First(g => g.Value == kv.Key.ToString()).Text:</strong>
+                                @foreach (var subId in kv.Value)
+                                {
+                                    <span class="label label-primary" style="margin-right:7px;">
+                                        @Model.AvailableSubjectsByGrade[kv.Key].First(s => s.Value == subId.ToString()).Text
+                                    </span>
+                                }
+                            </div>
+                        }
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+    @using (Html.BeginForm("RegisterTutor", "Account", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.FirstName)
+        @Html.HiddenFor(m => m.LastName)
+        @Html.HiddenFor(m => m.Email)
+        @Html.HiddenFor(m => m.Phone)
+        @Html.HiddenFor(m => m.Qualifications)
+        @Html.HiddenFor(m => m.Bio)
+        @Html.HiddenFor(m => m.ProfilePicBase64)
+        <input type="hidden" name="IsConfirmation" value="true" />
+
+        foreach (var g in Model.SelectedGrades)
+        {
+            <input type="hidden" name="SelectedGrades" value="@g" />
+            foreach (var s in Model.SelectedSubjectsPerGrade[g])
+            {
+                <input type="hidden" name="subjects_for_grade_@g" value="@s" />
+            }
+        }
+        <div class="text-center" style="margin-bottom:30px;">
+            <button type="submit" class="btn btn-success btn-lg" style="margin-right:16px;">
+                Save & Register Tutor
+            </button>
+            <a href="@Url.Action("RegisterTutor","Account")" class="btn btn-default btn-lg">Edit Details</a>
+        </div>
+    }
+</div>

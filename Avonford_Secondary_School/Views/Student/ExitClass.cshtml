@@ -1,0 +1,22 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.StudentExitClassVM
+@{
+    ViewBag.Title = "Exit Class";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4">
+    <div class="card mx-auto" style="max-width:520px;">
+        <div class="card-body">
+            <h3>Exit @Model.ClassName</h3>
+            <form method="post" action="@Url.Action("ExitClass", "Student")">
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.EnrollmentID)
+                <div class="mb-3">
+                    <label>Reason for exiting:</label>
+                    @Html.TextAreaFor(m => m.Reason, new { @class = "form-control", rows = 4, required = "required" })
+                </div>
+                <button type="submit" class="btn btn-danger">Confirm Exit</button>
+                <a href="@Url.Action("ClassDetails", "Student", new { classId = Model.TutorClassID })" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>

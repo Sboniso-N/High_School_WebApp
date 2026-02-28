@@ -1,0 +1,49 @@
+﻿@* ========================= Views/Book/BorrowPaySuccess.cshtml ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.BorrowVMs.BorrowReceiptVM
+@{
+    ViewBag.Title = "Payment successful";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .wrap {
+        margin-top: 24px
+    }
+
+    .card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        box-shadow: 0 10px 24px rgba(0,0,0,.06);
+        padding: 24px;
+        text-align: center
+    }
+
+    .big {
+        font-size: 20px;
+        font-weight: 800
+    }
+
+    .muted {
+        color: #64748b
+    }
+</style>
+
+<div class="container wrap">
+    <div class="card">
+        <div style="font-size:40px;line-height:1">🎉</div>
+        <div class="big">Payment complete</div>
+        <div class="muted" style="margin-top:6px">
+            Reservation #@Model.ReservationID — @Model.Title
+        </div>
+
+        <div style="margin-top:14px">
+            <div><b>Total paid:</b> R @Model.TotalPaid.ToString("0.00")</div>
+            <div><b>Paid at:</b> @Model.PaidAt.ToString("yyyy-MM-dd HH:mm")</div>
+        </div>
+
+        <div style="margin-top:18px">
+            <a class="btn btn-primary" href="@Url.Action("MyBorrowings","Book")">Go to My Borrowings</a>
+            <a class="btn btn-default" href="@Url.Action("BorrowDetails","Book", new { id = Model.ReservationID })" style="margin-left:6px">View reservation</a>
+        </div>
+    </div>
+</div>

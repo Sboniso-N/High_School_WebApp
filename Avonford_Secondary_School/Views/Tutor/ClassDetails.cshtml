@@ -1,0 +1,184 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorClassDetailViewModel
+@{
+    ViewBag.Title = "Class Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+<style>
+    .hidden-section {
+        display: none;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #eee;
+        background: #f7f7f7;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 7px #0000000c;
+    }
+
+    .section-toggle-btn {
+        margin-bottom: 12px;
+    }
+</style>
+
+<div class="container">
+    <div class="row" style="margin-bottom:24px;">
+        <div class="col-md-3">
+            <img src="@(string.IsNullOrEmpty(Model.CoverImageBase64) ? "/Content/default-cover.jpg" : "data:image/jpeg;base64," + Model.CoverImageBase64)" style="width:100%;border-radius:12px;border:3px solid #ff6600;max-height:220px;object-fit:cover;">
+        </div>
+        <div class="col-md-9">
+            <h2 style="color:#ff6600;">@Model.ClassName</h2>
+            <p><strong>Grade:</strong> @Model.GradeName &nbsp; <strong>Subject:</strong> @Model.SubjectName</p>
+            <p><strong>Mode:</strong> @Model.Mode &nbsp; <strong>Location:</strong> @Model.Location</p>
+            <p><strong>WhatsApp Contact:</strong> @Model.WhatsAppContact</p>
+            <p><strong>Entry Requirements:</strong> @Model.EntryRequirements</p>
+            <p><strong>Schedule:</strong> @Model.ScheduleTemplate</p>
+            <p><strong>Enrollment Deadline:</strong> @Model.EnrollmentDeadline</p>
+            <p><strong>Capacity:</strong> @Model.Enrolled / @Model.Capacity &nbsp; <strong>Annual Fee:</strong> R @Model.AnnualFee</p>
+            <div>
+                <span id="class-status" class="label label-@(Model.IsActive ? "success" : "default")" style="font-size:16px;">@((Model.IsActive) ? "Active" : "Inactive")</span>
+                <button class="btn btn-sm btn-warning section-toggle-btn" id="btnUpdateStatus"><i class="fa fa-edit"></i> Update Status</button>
+            </div>
+            <div id="statusSection" class="hidden-section">
+                <form id="statusForm">
+                    <input type="hidden" id="classId" value="@Model.TutorClassID" />
+                    <label>
+                        <input type="radio" name="IsActive" value="true" @(Model.IsActive ? "checked" : "") /> Active
+                    </label>
+                    <label style="margin-left:25px;">
+                        <input type="radio" name="IsActive" value="false" @(!Model.IsActive ? "checked" : "") /> Inactive
+                    </label>
+                    <button type="button" class="btn btn-primary" id="saveStatusBtn" style="margin-left:25px;">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <div>
+        <h4>Class Description</h4>
+        <div style="font-size:16px;">@Model.ClassDescription</div>
+    </div>
+
+    <div style="margin-bottom:22px;">
+        <a href="@Url.Action("ManageSessions", "Tutor", new { classId = Model.TutorClassID })"
+           class="btn btn-success btn-lg" style="font-weight:600;">
+            <i class="fa fa-calendar"></i> View / Manage Tutoring Sessions
+        </a>
+    </div>
+
+
+    <hr />
+    <div>
+        <h4>
+            Class Resources
+            <button class="btn btn-primary btn-sm section-toggle-btn pull-right" id="showAddResource"><i class="fa fa-plus"></i> Add Resource</button>
+        </h4>
+        <div id="addResourceSection" class="hidden-section">
+            @using (Html.BeginForm("AddResource", "Tutor", FormMethod.Post, new { enctype = "multipart/form-data", id = "addResourceForm" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="classId" value="@Model.TutorClassID" />
+                <div class="form-group">
+                    <label>Upload PDF Resource:</label>
+                    <input type="file" name="resourceFile" accept="application/pdf" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-success">Upload</button>
+            }
+        </div>
+        <ul class="list-group" id="resource-list">
+            @foreach (var res in Model.Resources)
+            {
+                <li class="list-group-item" style="display:flex;align-items:center;">
+                    <span class="fa fa-file-pdf-o" style="color:#ff6600;font-size:20px;margin-right:10px;"></span>
+                    <span style="flex:1;">@res.FileName</span>
+                    <a href="@Url.Action("ViewResource", "Tutor", new { id = res.ResourceID })" target="_blank" class="btn btn-xs btn-info" title="View"><i class="fa fa-eye"></i></a>
+                    <form action="@Url.Action("DeleteResource", "Tutor")" method="post" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@res.ResourceID" />
+                        <input type="hidden" name="classId" value="@Model.TutorClassID" />
+                        <button type="submit" class="btn btn-xs btn-danger" title="Remove" onclick="return confirm('Remove this resource?');"><i class="fa fa-trash"></i></button>
+                    </form>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <hr />
+    <div>
+        <h4>Enrolled Students</h4>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Paid</th>
+                    <th>Status</th>
+                    <th>Enrollment Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model.Enrollments)
+                {
+                    <tr>
+                        <td>@e.StudentName</td>
+                        <td>@e.StudentEmail</td>
+                        <td>@(e.IsPaid ? "Yes" : "No")</td>
+                        <td>@e.Status</td>
+                        <td>@e.EnrollmentDate.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Toggle Add Resource Panel
+        $("#showAddResource").on("click", function () {
+            var sec = $("#addResourceSection");
+            if (sec.is(":visible")) {
+                sec.slideUp();
+            } else {
+                sec.slideDown();
+                sec.find("input[type=file]").focus();
+            }
+        });
+        // Auto-close Add Resource panel after upload
+        $("#addResourceForm").on("submit", function () {
+            $("#addResourceSection").slideUp();
+        });
+
+        // Toggle Status Update Panel
+        $("#btnUpdateStatus").on("click", function () {
+            var sec = $("#statusSection");
+            if (sec.is(":visible")) {
+                sec.slideUp();
+            } else {
+                sec.slideDown();
+            }
+        });
+        // AJAX Status Update with auto-close
+        $("#saveStatusBtn").on("click", function (e) {
+            e.preventDefault();
+            var isActive = $("input[name='IsActive']:checked").val();
+            var classId = $("#classId").val();
+            $.ajax({
+                url: '@Url.Action("UpdateClassStatus", "Tutor")',
+                type: 'POST',
+                data: { id: classId, isActive: isActive },
+                success: function (data) {
+                    if (data && data.success) {
+                        $("#statusSection").slideUp();
+                        $("#class-status").text(data.status);
+                        $("#class-status").removeClass("label-success label-default")
+                            .addClass(data.status === "Active" ? "label-success" : "label-default");
+                    }
+                }
+            });
+        });
+    </script>
+}

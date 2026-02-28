@@ -1,0 +1,100 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.TutorSessionViewModel
+@{
+    ViewBag.Title = "Session Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <h2>@Model.Title - <span class="small">@Model.SessionDate.ToShortDateString() | @Model.StartTime.ToString(@"hh\:mm") - @Model.EndTime.ToString(@"hh\:mm")</span></h2>
+    <hr />
+    <p><b>Description:</b> @Model.Description</p>
+    <p><b>Mode:</b> @Model.Mode</p>
+    @if (Model.Mode == "Online")
+    {
+        <p><b>Online Meeting Link:</b> <a href="@Model.OnlineMeetingLink" target="_blank">@Model.OnlineMeetingLink</a></p>
+    }
+    else
+    {
+        <p><b>Location:</b> @Model.Location</p>
+    }
+    <p>
+        <b>Status:</b>
+        @if (Model.IsCancelled)
+        {<span class="badge badge-danger">Cancelled</span> }
+        else
+        { <span class="badge badge-success">Active</span>}
+    </p>
+    <hr />
+    <h4>Session Resources</h4>
+    @if (Model.Resources.Any())
+    {
+        <ul>
+            @foreach (var res in Model.Resources)
+            {
+                <li>
+                    <a href="@Url.Action("ViewResource", "Tutor", new { id = res.ResourceID })" target="_blank">@res.FileName</a>
+                    <form method="post" action="@Url.Action("DeleteResource", "Tutor")" style="display:inline;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@res.ResourceID" />
+                        <input type="hidden" name="classId" value="@Model.TutorClassID" />
+                        <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Remove this resource?');">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p>No resources uploaded for this session.</p>
+    }
+
+    <hr />
+    @if (!Model.IsCancelled)
+    {
+        <button id="btnReschedule" class="btn btn-warning"><i class="fa fa-edit"></i> Reschedule</button>
+        <form method="post" action="@Url.Action("CancelSession", "Tutor")" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.TutorSessionID" />
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Cancel this session?');">
+                <i class="fa fa-ban"></i> Cancel Session
+            </button>
+        </form>
+    }
+    <a href="@Url.Action("ManageSessions", "Tutor", new { classId = Model.TutorClassID })" class="btn btn-default">Back to Sessions</a>
+
+    <div id="rescheduleSection" class="card card-body mt-4" style="display:none;">
+        <h5>Reschedule Session</h5>
+        @using (Html.BeginForm("RescheduleSession", "Tutor", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.Hidden("sessionId", Model.TutorSessionID)
+            <div class="form-group">
+                <label>New Date</label>
+                <input type="date" name="newDate" class="form-control" value="@Model.SessionDate.ToString("yyyy-MM-dd")" required />
+            </div>
+            <div class="form-group">
+                <label>New Start Time</label>
+                <input type="time" name="newStartTime" class="form-control" value="@Model.StartTime.ToString(@"hh\:mm")" required />
+            </div>
+            <div class="form-group">
+                <label>New End Time</label>
+                <input type="time" name="newEndTime" class="form-control" value="@Model.EndTime.ToString(@"hh\:mm")" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <button type="button" class="btn btn-secondary" id="btnCloseReschedule">Cancel</button>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $("#btnReschedule").on("click", function () {
+            $("#rescheduleSection").slideToggle();
+        });
+        $("#btnCloseReschedule").on("click", function () {
+            $("#rescheduleSection").slideUp();
+        });
+    </script>
+}

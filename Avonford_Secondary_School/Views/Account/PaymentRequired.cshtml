@@ -1,0 +1,125 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.PaymentRequiredViewModel
+
+@{
+    ViewBag.Title = "School Fees Payment Required";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            padding-top: 70px;
+        }
+
+        .navbar {
+            background-color: #222;
+            border: none;
+            border-radius: 0;
+            margin-bottom: 40px;
+        }
+
+        .navbar-brand {
+            color: #fff !important;
+            font-weight: bold;
+        }
+
+        .navbar-nav > li > a {
+            color: white !important;
+            font-weight: bold;
+        }
+
+            .navbar-nav > li > a:hover {
+                background-color: #ff6600 !important;
+                color: #fff !important;
+            }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: #fff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #ff6600;
+            margin-bottom: 25px;
+        }
+
+        .alert-danger {
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
+        .btn-success {
+            background-color: #ff6600;
+            border-color: #ff6600;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+            .btn-success:hover {
+                background-color: #e65c00;
+                border-color: #e65c00;
+            }
+
+        .checkbox label {
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Avonford Secondary</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li>@Html.ActionLink("Logout", "Logout", "Account")</li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Fees Payment Required</h2>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">@Model.ErrorMessage</div>
+        }
+
+        <p>
+            You have been admitted, but you must pay your school fees <strong>(R @Model.FeeAmount)</strong> to activate your account.
+        </p>
+        <p>Please read and accept the terms and conditions below to proceed.</p>
+
+        @using (Html.BeginForm("PaymentRequired", "Account", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(m => m.FeeAmount)
+
+            <div class="checkbox">
+                <label>
+                    @Html.CheckBoxFor(m => m.TermsAccepted) I agree to the Terms & Conditions
+                </label>
+            </div>
+
+            <input type="submit" value="Proceed to Payment" class="btn btn-success" />
+        }
+    </div>
+</body>
+</html>

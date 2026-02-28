@@ -1,0 +1,193 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.ReturnVMs.AdminReturnReviewVM
+@{
+    ViewBag.Title = $"Review RMA #{Model.ReturnID}";
+}
+<style>
+    .wrap {
+        max-width: 1100px;
+        margin: 24px auto;
+        padding: 16px
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1.2fr .8fr;
+        gap: 16px
+    }
+
+    .card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0,0,0,.04);
+        padding: 16px
+    }
+
+    .title {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 6px
+    }
+
+    .gallery {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px
+    }
+
+        .gallery img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb
+        }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px dashed #f1f5f9
+    }
+
+        .row:last-child {
+            border-bottom: 0
+        }
+
+    .btn {
+        background: #111827;
+        color: #fff;
+        border: 0;
+        padding: 10px 16px;
+        border-radius: 10px;
+        cursor: pointer
+    }
+
+        .btn[disabled] {
+            opacity: .5
+        }
+
+    .btn-outline {
+        background: #fff;
+        color: #111827;
+        border: 1px solid #cbd5e1
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap
+    }
+
+    .toast {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        background: #111827;
+        color: #fff;
+        padding: 12px 14px;
+        border-radius: 10px;
+        display: none
+    }
+
+    .switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px
+    }
+</style>
+
+<div class="wrap">
+    <div class="grid">
+        <div class="card">
+            <div class="title">RMA #@Model.ReturnID &middot; Order #@Model.OrderID</div>
+            <div>Buyer: <strong>@Model.BuyerEmail</strong> &middot; Seller: <strong>@Model.SellerEmail</strong></div>
+            <div style="margin-top:10px"><strong>@Model.BookTitle</strong></div>
+
+            <div style="margin-top:16px"><strong>Reason</strong><div>@Model.Reason</div></div>
+            <div style="margin-top:10px">
+                <strong>Description</strong>
+                <div>@Html.Raw(Html.Encode(Model.Description).Replace("\n", "<br/>"))</div>
+            </div>
+
+            <div style="margin-top:16px"><strong>Evidence</strong></div>
+            <div class="gallery" style="margin-top:6px">
+                @if (Model.ImageBase64?.Count > 0)
+                {
+                    foreach (var b64 in Model.ImageBase64)
+                    {
+                        <a href="data:image/*;base64,@b64" target="_blank" title="Open full">
+                            <img src="data:image/*;base64,@b64" />
+                        </a>
+                    }
+                }
+                else
+                { <div>No photos provided.</div>}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="title">Financials</div>
+            <div class="row"><div>Book value (refundable):</div><div>R @Model.BookValue.ToString("0.00")</div></div>
+            <div class="row"><div>Delivery fee:</div><div>R @Model.DeliveryFee.ToString("0.00")</div></div>
+
+            <div style="margin-top:12px" class="switch">
+                @* this belongs to the decision form *@
+                <input type="checkbox" id="incDel" />
+                <label for="incDel">Include delivery fee in refund (special cases only)</label>
+            </div>
+
+            <div style="margin-top:10px">
+                <label>Admin comment</label>
+                <textarea id="adminComment" maxlength="1000" class="form-control" style="width:100%;min-height:90px"></textarea>
+                <div class="help" style="font-size:12px;color:#64748b">Required for all decisions.</div>
+            </div>
+
+            <div class="actions" style="margin-top:14px">
+                <button class="btn" data-action="ApproveReturn">Approve & Refund</button>
+                <button class="btn btn-outline" data-action="DeclineReturn">Decline</button>
+                <button class="btn btn-outline" data-action="NeedInfoReturn">Need more info</button>
+                <a class="btn btn-outline" href="@Url.Action("ReturnsQueue","Admin", new { status="Pending"})">Back</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="postForm" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+    <input name="ReturnID" value="@Model.ReturnID" />
+    <input name="IncludeDeliveryFee" id="fInc" />
+    <input name="Comment" id="fComment" />
+</form>
+
+<div class="toast" id="toast"></div>
+
+@section scripts{
+    <script>
+(function(){
+    const toast = (t)=>{ var el=document.getElementById('toast'); el.textContent=t; el.style.display='block'; setTimeout(()=>el.style.display='none',2200); };
+    const token = document.querySelector('#postForm input[name="__RequestVerificationToken"]').value;
+    document.querySelectorAll('[data-action]').forEach(btn=>{
+        btn.addEventListener('click', function(){
+            const act = this.getAttribute('data-action');
+            const comment = (document.getElementById('adminComment').value||'').trim();
+            if(!comment){ toast('Please add a brief comment.'); return; }
+
+            // fill hidden form fields
+            document.getElementById('fInc').value = document.getElementById('incDel').checked ? 'true':'false';
+            document.getElementById('fComment').value = comment;
+
+            // post via AJAX for instant feedback
+            this.setAttribute('disabled','disabled');
+            fetch('@Url.Action("", "Admin")/'+act, {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token, 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(new FormData(document.getElementById('postForm')))
+            }).then(r=>{ if(r.redirected){ window.location = r.url; return; } return r.text(); })
+              .catch(()=>toast('Network error'))
+              .finally(()=>this.removeAttribute('disabled'));
+        });
+    });
+})();
+    </script>
+}

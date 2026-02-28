@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "Payment Failed";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f8f8;
+            font-family: 'Segoe UI', sans-serif;
+            color: #333;
+            padding: 60px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        h2 {
+            color: #d9534f;
+            font-weight: bold;
+        }
+
+        .alert-danger {
+            font-size: 16px;
+            padding: 20px;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            color: #a94442;
+            border-radius: 5px;
+            margin: 25px 0;
+        }
+
+        .btn-warning {
+            background-color: #ff6600;
+            border-color: #ff6600;
+            color: white;
+            font-size: 16px;
+            padding: 10px 25px;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+            .btn-warning:hover {
+                background-color: #e65c00;
+                border-color: #e65c00;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Payment Failed</h2>
+
+        <div class="alert alert-danger">
+            Your payment was canceled or failed.<br />
+            Please try again or contact support if the issue persists.
+        </div>
+
+        <p>
+            <a href="@Url.Action("PaymentRequired", "Account")" class="btn btn-warning">Return to Payment Page</a>
+        </p>
+    </div>
+</body>
+</html>

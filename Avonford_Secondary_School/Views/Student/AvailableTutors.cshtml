@@ -1,0 +1,99 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.PrivateSessionRequestVM
+@{
+    ViewBag.Title = "Select a Tutor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container py-4" style="max-width:700px;">
+    <h2>Available Tutors</h2>
+    <p>
+        <b>Subject:</b> @Model.AvailableSubjects.FirstOrDefault(x => x.Value == Model.SelectedSubjectID.ToString())?.Text <br />
+        <b>Time:</b> @Model.StartTime.ToString("yyyy-MM-dd HH:mm") to @Model.EndTime.ToString("yyyy-MM-dd HH:mm")
+    </p>
+    @if (Model.AvailableTutors == null || !Model.AvailableTutors.Any())
+    {
+        <div class="alert alert-warning">
+            No tutors are available at the selected time. Please <a href="@Url.Action("BookPrivateSession", "Student")">try a different slot</a>.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var tutor in Model.AvailableTutors)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="@(tutor.ProfilePicBase64 != null ? "data:image/jpeg;base64," + tutor.ProfilePicBase64 : "/Content/img/no-profile.png")"
+                                     class="rounded-circle" style="width:54px;height:54px;object-fit:cover;margin-right:10px;">
+                                <span><b>@tutor.TutorName</b></span>
+                            </div>
+                            <p>
+                                <span class="text-muted"><b>Qualifications:</b> @tutor.Qualifications</span><br />
+                                <span class="text-muted"><b>Email:</b> @tutor.Email</span>
+                            </p>
+                            <div class="mb-2">
+                                <button type="button" class="btn btn-info btn-sm view-profile" data-tutor="@tutor.TutorID">
+                                    View Profile
+                                </button>
+                                <button type="button" class="btn btn-success btn-sm book-now" data-tutor="@tutor.TutorID">
+                                    Book This Tutor
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Modal for Book/Confirm -->
+<div class="modal fade" id="bookConfirmModal" tabindex="-1" aria-labelledby="bookConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="confirmBookingForm" method="post" action="@Url.Action("SubmitPrivateSessionRequest", "Student")">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="selectedTutorId" name="tutorId" />
+                <input type="hidden" name="topicMessage" value="@Model.TopicMessage" />
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Private Session Booking</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalTutorDetails"></div>
+                    <p>
+                        <b>Subject:</b> @Model.AvailableSubjects.FirstOrDefault(x => x.Value == Model.SelectedSubjectID.ToString())?.Text <br />
+                        <b>Start:</b> @Model.StartTime.ToString("yyyy-MM-dd HH:mm") <br />
+                        <b>End:</b> @Model.EndTime.ToString("yyyy-MM-dd HH:mm") <br />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Confirm Booking</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Open modal and set tutorId when "Book Now" clicked
+        $(".book-now").on("click", function () {
+            var tutorId = $(this).data("tutor");
+            $("#selectedTutorId").val(tutorId);
+            var card = $(this).closest(".card");
+            $("#modalTutorDetails").html(card.html());
+            var modal = new bootstrap.Modal(document.getElementById('bookConfirmModal'));
+            modal.show();
+        });
+
+        // Open new window with tutor profile when "View Profile" clicked
+        $(".view-profile").on("click", function () {
+            var tutorId = $(this).data("tutor");
+            window.open('@Url.Action("TutorProfile", "Student")' + '?tutorId=' + tutorId, '_blank');
+        });
+    </script>
+}

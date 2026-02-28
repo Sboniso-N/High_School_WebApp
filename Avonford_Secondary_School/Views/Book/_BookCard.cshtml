@@ -1,0 +1,24 @@
+﻿@* ========================= Views/Book/_BookCard.cshtml (optional partial, not required if Index is used as-is) ========================= *@
+@model Avonford_Secondary_School.Models.ViewModels.BookCardVM
+<div class="card">
+    <img class="card-img" src="@(string.IsNullOrEmpty(Model.MainImageBase64) ? Url.Content("~/Content/images/Edu-DHS-e1675942435742-780x341.jpg") : ("data:image;base64," + Model.MainImageBase64))" alt="@Model.Title cover" />
+    <div style="padding:14px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <h4 style="margin:0 8px 6px 0; font-weight:600">@Model.Title</h4>
+            <span class="pill">@Model.Condition</span>
+        </div>
+        <div style="color:#666; margin-bottom:8px">
+            @(!string.IsNullOrWhiteSpace(Model.Author) ? Model.Author : "Unknown author")
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+                <span style="font-weight:700">R @Model.Price.ToString("0.00")</span>
+                @if (Model.IsNegotiable)
+                {<small class="text-muted">&nbsp;(neg.)</small>}
+            </div>
+            <div>
+                <a class="btn btn-xs btn-default" href="@Url.Action("Details","Book", new { id = Model.BookID })">View</a>
+            </div>
+        </div>
+    </div>
+</div>

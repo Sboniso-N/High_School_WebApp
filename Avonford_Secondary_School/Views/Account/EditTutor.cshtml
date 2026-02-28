@@ -1,0 +1,208 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.RegisterTutorViewModel
+
+@{
+    ViewBag.Title = "Edit Tutor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+<style>
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .multi-select-grade {
+        margin-bottom: 10px;
+    }
+
+    .section-label {
+        font-weight: bold;
+        font-size: 18px;
+        margin-top: 20px;
+    }
+
+    .img-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 60px;
+        margin: 10px 0;
+        object-fit: cover;
+        border: 1px solid #ff6600;
+    }
+
+    .subject-select-section {
+        margin-top: 15px;
+        display: none;
+    }
+</style>
+
+<div class="container">
+    <h2 class="text-center" style="color:#ff6600;">Edit Tutor</h2>
+    <div class="loading-spinner" id="loadingSpinner">
+        <img src="https://i.imgur.com/llF5iyg.gif" style="height:40px;" />
+        <div>Processing...</div>
+    </div>
+
+    @using (Html.BeginForm("EditTutor", "Account", FormMethod.Post, new { enctype = "multipart/form-data", id = "tutorForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <input type="hidden" name="TutorID" value="@Model.TutorID" />
+        @Html.HiddenFor(m => m.ProfilePicBase64)
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FirstName)
+                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.LastName)
+                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Phone, "Cell Phone")
+                    @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", placeholder = "e.g. 0821234567" })
+                    @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Qualifications)
+                    @Html.TextBoxFor(m => m.Qualifications, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Qualifications, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Bio)
+                    @Html.TextAreaFor(m => m.Bio, new { @class = "form-control", rows = 4 })
+                    @Html.ValidationMessageFor(m => m.Bio, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    <label>Profile Picture (Upload to change):</label>
+                    <input type="file" name="ProfilePicture" id="ProfilePictureInput" accept="image/*" class="form-control" />
+                    <img id="imgPreview" class="img-preview"
+                         src="@( !string.IsNullOrEmpty(Model.ProfilePicBase64)
+                                ? "data:image/jpeg;base64," + Model.ProfilePicBase64
+                                : "https://via.placeholder.com/120")" />
+                    @Html.ValidationMessageFor(m => m.ProfilePicture, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <div class="section-label">1. Select Grades <span style="font-weight:normal;">(Choose 1 or 2):</span></div>
+        <div>
+            @for (int i = 0; i < Model.GradeList.Count; i++)
+            {
+                <label class="multi-select-grade" style="margin-right:25px;">
+                    <input type="checkbox" class="grade-checkbox" name="SelectedGrades" value="@Model.GradeList[i].Value"
+                           @(Model.SelectedGrades != null && Model.SelectedGrades.Contains(Int32.Parse(Model.GradeList[i].Value)) ? "checked" : "") /> @Model.GradeList[i].Text
+                    </label>
+                }
+            <span id="grade-error" class="text-danger"></span>
+        </div>
+
+        <div id="subjectsSection">
+            @foreach (var g in Model.GradeList)
+            {
+                var gradeId = int.Parse(g.Value);
+                <div class="subject-select-section" id="subjects_for_grade_section_@gradeId">
+                    <label>Subjects for <b>@g.Text</b>:</label><br />
+                    @if (Model.AvailableSubjectsByGrade.ContainsKey(gradeId))
+                    {
+                        foreach (var subj in Model.AvailableSubjectsByGrade[gradeId])
+                        {
+                            var isChecked = Model.SelectedSubjectsPerGrade.ContainsKey(gradeId)
+                                && Model.SelectedSubjectsPerGrade[gradeId] != null
+                                && Model.SelectedSubjectsPerGrade[gradeId].Contains(int.Parse(subj.Value));
+                            <label style="margin-right:18px;">
+                                <input type="checkbox" name="subjects_for_grade_@gradeId" value="@subj.Value"
+                                       @(isChecked ? "checked" : "") />
+                                @subj.Text
+                            </label>
+                        }
+                    }
+                    <span class="text-danger subject-error" id="error_grade_@gradeId"></span>
+                </div>
+            }
+        </div>
+        <hr />
+
+        <div class="text-center" style="margin-top:25px;">
+            <button type="submit" class="btn btn-lg btn-success">Save Changes</button>
+            <a href="@Url.Action("TutorsList", "Account")" class="btn btn-default btn-lg" style="margin-left:15px;">Cancel</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function toggleSubjectSections() {
+            $(".subject-select-section").hide();
+            $(".grade-checkbox:checked").each(function () {
+                var gradeId = $(this).val();
+                $("#subjects_for_grade_section_" + gradeId).show();
+                var checked = $("input[type=checkbox][name='subjects_for_grade_" + gradeId + "']:checked");
+                var all = $("input[type=checkbox][name='subjects_for_grade_" + gradeId + "']");
+                if (checked.length >= 3) {
+                    all.not(":checked").attr("disabled", true);
+                } else {
+                    all.attr("disabled", false);
+                }
+            });
+        }
+        $(document).ready(function () {
+            setTimeout(function () { $(".loading-spinner").fadeOut(); }, 1200);
+
+            $(".grade-checkbox").on("change", function () {
+                var checkedCount = $(".grade-checkbox:checked").length;
+                if (checkedCount > 2) {
+                    $(this).prop("checked", false);
+                    $("#grade-error").text("You can only select up to 2 grades.");
+                } else if (checkedCount < 1) {
+                    $("#grade-error").text("Select at least one grade.");
+                } else {
+                    $("#grade-error").text("");
+                }
+                toggleSubjectSections();
+            });
+
+            $(document).on("change", "input[type=checkbox][name^='subjects_for_grade_']", function () {
+                var gradeId = $(this).attr("name").replace("subjects_for_grade_", "");
+                var checked = $("input[type=checkbox][name='subjects_for_grade_" + gradeId + "']:checked").length;
+                if (checked > 3) {
+                    $(this).prop("checked", false);
+                    $("#error_grade_" + gradeId).text("Maximum 3 subjects per grade.");
+                } else if (checked < 1) {
+                    $("#error_grade_" + gradeId).text("Select at least 1 subject.");
+                } else {
+                    $("#error_grade_" + gradeId).text("");
+                }
+                toggleSubjectSections();
+            });
+
+            $("#ProfilePictureInput").change(function (e) {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (evt) {
+                        $("#imgPreview").attr('src', evt.target.result).show();
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            toggleSubjectSections();
+        });
+    </script>
+}

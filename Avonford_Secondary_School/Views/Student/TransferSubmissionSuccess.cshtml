@@ -1,0 +1,69 @@
+﻿@model Avonford_Secondary_School.Models.ViewModels.StudentTransferPreviewVM
+@{
+    ViewBag.Title = "Transfer Request Submitted";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container mt-5">
+    <h2 class="mb-3 text-success"><i class="fas fa-check-circle"></i> Transfer Request Submitted!</h2>
+    <div class="alert alert-success mb-4">
+        Your transfer request was successfully submitted and is pending review.
+    </div>
+    <div class="row">
+        <!-- Current Details -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white"><b>Current Details</b></div>
+                <div class="card-body">
+                    <p><b>Stream:</b> @Model.CurrentStream</p>
+                    <p><b>Grade:</b> @Model.CurrentGrade</p>
+                    <p><b>Subjects:</b></p>
+                    <ul>
+                        @foreach (var s in Model.CurrentSubjects)
+                        {
+                            <li>@s</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- New Details -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white"><b>Target Details</b></div>
+                <div class="card-body">
+                    <p><b>Stream:</b> <span class="font-weight-bold text-success">@Model.NewStream</span></p>
+                    <p><b>Grade:</b> @Model.NewGrade</p>
+                    <p><b>Subjects:</b></p>
+                    <ul>
+                        @foreach (var s in Model.NewSubjects)
+                        {
+                            <li>@s</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Middle: Justification & File -->
+        <div class="col-md-2 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white"><b>Other Details</b></div>
+                <div class="card-body">
+                    <b>Justification:</b>
+                    <div class="border rounded p-2 bg-light mb-2" style="min-height:60px;">@Model.Justification</div>
+                    @if (!string.IsNullOrEmpty(Model.SupportingDocumentName))
+                    {
+                        <b>Attachment:</b>
+                        <div class="alert alert-secondary mt-2">
+                            <i class="fas fa-file-pdf"></i> @Model.SupportingDocumentName
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <a href="@Url.Action("Index", "Student")" class="btn btn-lg btn-primary px-5">
+            <i class="fas fa-home"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
